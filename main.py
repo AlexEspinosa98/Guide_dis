@@ -13,7 +13,7 @@ import recursos_iconos
 import cv2
 
 from output import *
-from lib.tesis_maestri import *
+from library_new.tesis_maestri import *
 """/// Listado de variable  utilizadas y funciones\\
     self.ruta_variable => Variable que guarda la dir de folder
     self.list_image    => Variable que contiene la lista de imagenes
