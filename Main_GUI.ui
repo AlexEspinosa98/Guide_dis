@@ -617,7 +617,7 @@ background-color: rgb(85, 205, 218);
           <enum>QFrame::Plain</enum>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="p_home">
           <property name="sizePolicy">
@@ -1130,7 +1130,7 @@ border: 2px solid  rgb(50, 121, 129);
                    </sizepolicy>
                   </property>
                   <attribute name="horizontalHeaderVisible">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </attribute>
                   <attribute name="horizontalHeaderCascadingSectionResizes">
                    <bool>false</bool>
@@ -1513,7 +1513,7 @@ border: 2px solid  rgb(50, 121, 129);
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="b4_rigth_2">
+               <widget class="QPushButton" name="b4_right_2">
                 <property name="font">
                  <font>
                   <weight>75</weight>
@@ -1699,7 +1699,7 @@ border: 2px solid  rgb(50, 121, 129);
                    </sizepolicy>
                   </property>
                   <attribute name="horizontalHeaderVisible">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </attribute>
                   <attribute name="horizontalHeaderCascadingSectionResizes">
                    <bool>false</bool>
