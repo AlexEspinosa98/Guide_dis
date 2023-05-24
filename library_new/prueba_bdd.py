@@ -6,10 +6,10 @@ import sqlite3
 
 
 
-""" # Eliminar la abse de datos 
+# Eliminar la base de datos 
 
 # Conectarse a la base de datos
-conexion = sqlite3.connect('test.db')  # Reemplaza con la ruta y nombre de tu base de datos
+""" conexion = sqlite3.connect('./library_new/test.db')  # Reemplaza con la ruta y nombre de tu base de datos
 
 # Crear un cursor
 cursor = conexion.cursor()
@@ -37,7 +37,7 @@ conexion.close()
 #import sqlite3
 #CREACIÓN  de las tablas en la base de datos
 # Conectarse a la base de datos
-conexion = sqlite3.connect('test.db')  # Reemplaza con la ruta y nombre de tu base de datos
+conexion = sqlite3.connect('./library_new/test.db')  # Reemplaza con la ruta y nombre de tu base de datos
 
 # Crear un cursor
 cursor = conexion.cursor()
@@ -45,17 +45,19 @@ cursor = conexion.cursor()
 # Crear una tabla
 cursor.execute('''CREATE TABLE IF NOT EXISTS registro_carpeta (
                     id INTEGER PRIMARY KEY,
-                    nombre_carpeta TEXT,
                     numero_de_imagenes INTEGER,
-                    ruta_carpeta TEXT
+                    ruta_carpeta TEXT,
+                    fecha TXT
                 );''')
 
 # Crear otra tabla
 cursor.execute('''CREATE TABLE IF NOT EXISTS tabla_imagenes (
                     id INTEGER PRIMARY KEY,
                     nombre_imagen TEXT,
-                    codigo_carpeta INTEGER,
-                    cantidad_detect INTEGER
+                    cantidad_detect INTEGER,
+                    id_registro_carpeta INTERGER,
+                    FOREIGN KEY (id_registro_carpeta)
+                        REFERENCES registro_carpeta (id) 
                 );''')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS resultado_imagen (
@@ -64,8 +66,10 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS resultado_imagen (
                     pixel_max TEXT,
                     latitud TEXT,
                     longitud TEXT,
-                    nom_imagen TEXT,
-                    codigo_carpeta INTEGER
+                    score TXT,
+                    id_tabla_imagenes INTERGER,
+                    FOREIGN KEY (id_tabla_imagenes)
+                        REFERENCES tabla_imagenes (id) 
                 );''')
 
 
@@ -81,10 +85,10 @@ for tabla in tablas:
     print(tabla[0])
 
 # Cerrar la conexión
-conexion.close() """
-
+conexion.close()
+ """
 # Consulta en la base de datos columnas
-""" conn = sqlite3.connect('test.db')
+""" conn = sqlite3.connect('./library_new/test.db')
 cursor = conn.cursor()
 
 # Obtener el nombre de las tablas
@@ -104,11 +108,11 @@ for tabla in tablas:
 
 # Cerrar la conexión
 conn.close()
-
  """
 
+
 # consultar todas las columnas de la base de datos
-conn = sqlite3.connect('test.db')
+conn = sqlite3.connect('./library_new/test.db')
 cursor = conn.cursor()
 
 # Ejecutar la consulta SELECT *

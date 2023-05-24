@@ -14,11 +14,27 @@ import cv2
 
 from output import *
 from library_new.tesis_maestri import *
+
+
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog
+import os
+
+import torch
+import torchvision
+from torchvision import transforms as torchtrans  
+import torchvision.transforms as transforms
+
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.patches as patches
+from PIL import Image
+
 """/// Listado de variable  utilizadas y funciones\\
     self.ruta_variable => Variable que guarda la dir de folder
     self.list_image    => Variable que contiene la lista de imagenes
     self.imgproyectada => variable para determinar que imagen se esta visualizando
     self.pag = dice en que pagina esta y reinicia
+    timage= saber si es la imagen original o la procesada
     """
 
 
@@ -28,10 +44,13 @@ class mainUI(QMainWindow):
         loadUi('Main_GUI.ui',self)
         self.ruta_carpeta=None
         self.list_images=[]
-        self.imgproyectada=0
+        self.imgproyectada=-1
         self.pag=0
+        self.timage=0
         self.b_home.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_home))	 #botones para cambiar de pagina
         self.b_model1.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_model1))
+        self.b_history.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_history))
+        self.b_history.clicked.connect(self.historial)
         self.b_model1.clicked.connect(self.identificador)
         self.b_model2.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_model2))
         self.b_model2.clicked.connect(self.identificador2)
@@ -41,18 +60,38 @@ class mainUI(QMainWindow):
         self.b4_right_3.clicked.connect(self.pasarimage2)
         self.b3_left_2.clicked.connect(self.pasarimage)   #boton izquierda para pasar datos
         self.b4_right_2.clicked.connect(self.pasarimage2)
+
+        #programando si es original o procesada para muestra de imagen
+        self.b_original.clicked.connect(self.original)
+        self.b_process.clicked.connect(self.procesada)
+
+        self.b2_process_2.clicked.connect(self.procesar_detection)
+        # modelo de deteccion
+        self.modeld = torch.load(("./library_new/modelo/content"),map_location=torch.device('cpu'))
+        self.modeld.eval()
     
+    def original(self):
+        self.timage=0
+        self.proyect_image()
+    def procesada(self):
+        # falta comprobacion si ya procesaron :D
+        self.timage=1
+        self.proyect_image()
+
     def identificador(self):
         if (self.pag):
-            self.pag=0
-            self.imgproyectada=0
-            self.proyect_image()
+            if (self.ruta_carpeta):
+                self.pag=0
+                self.imgproyectada=0    
+                self.proyect_image()
 
     def identificador2(self):
         if (not(self.pag)):
-            self.pag=1
-            self.imgproyectada=0
-            self.proyect_image()
+            
+            if (self.ruta_carpeta):
+                self.pag=1
+                self.imgproyectada=0
+                self.proyect_image()
 
     def leer_direc(self):
         self.ruta_carpeta = QFileDialog.getExistingDirectory(self,"Select Folder")
@@ -76,11 +115,18 @@ class mainUI(QMainWindow):
         else:
             mensaje = "Folder not found"
             QMessageBox.critical(self, "Error", mensaje)
-            
-    def proyect_image(self,):
         
-        self.image=cv2.imread(self.ruta_carpeta+'/'+self.list_images[int(self.imgproyectada)],1)
-        self.image=cv2.cvtColor(self.image,cv2.COLOR_BGR2RGB)
+    def proyect_image(self):
+
+        if (self.timage):
+            self.image=self.resultado
+            print("aqui estoy self procesada")
+        else: 
+            self.image=cv2.imread(self.ruta_carpeta+'/'+self.list_images[int(self.imgproyectada)],1)
+            self.image=cv2.cvtColor(self.image,cv2.COLOR_BGR2RGB)
+            print("aqui estoy 2_self oriignal ")
+        #self.image=cv2.imread(self.ruta_carpeta+'/'+self.list_images[int(self.imgproyectada)],1)
+
         self.image= cv2.resize(self.image, (520, 414), interpolation=cv2.INTER_LINEAR)
         qformat=QImage.Format.Format_BGR888
         img = QImage(self.image,self.image.shape[1],
@@ -88,9 +134,12 @@ class mainUI(QMainWindow):
                         self.image.strides[0],qformat)
         img= img.rgbSwapped()
         if (self.pag):
-            self.l_image_2.setPixmap(QPixmap.fromImage(img))
-        else:
             self.l_image_3.setPixmap(QPixmap.fromImage(img))
+            print("proyecte _ 3")
+        else:
+            self.l_image_2.setPixmap(QPixmap.fromImage(img))
+            print("proyecte _ 2")
+            
         
     def pasarimage(self):
         
@@ -107,7 +156,22 @@ class mainUI(QMainWindow):
         else:
             self.imgproyectada+=1
         self.proyect_image()
+    
+    def procesar_detection(self):
+        if (self.ruta_carpeta):    
+            #necesitamos direccion para ller la variable
         
+            self.resultado=prediccion(self.ruta_carpeta,self.modeld,self.list_images)
+            self.timage=1
+            self.proyect_image()
+
+        else:
+            mensaje = "the folder has not been selected"
+            QMessageBox.critical(self, "Error", mensaje)
+
+
+    def historial(self):
+        print("hola")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

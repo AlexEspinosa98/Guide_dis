@@ -67,6 +67,13 @@ db.sqlite3-journal
 instance/
 .webassets-cache
 
+#librerias de modelo
+./library_new/modelo/content
+./library_new/modelo/*
+/library_new/modelo/content
+./library_new/modelo.rar
+/library_new/modelo.rar
+
 # Scrapy stuff:
 .scrapy
 

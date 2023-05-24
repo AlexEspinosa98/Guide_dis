@@ -387,6 +387,29 @@ background-color: rgb(85, 205, 218);
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="b_history">
+               <property name="font">
+                <font>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>History</string>
+               </property>
+               <property name="icon">
+                <iconset resource="recursos.qrc">
+                 <normaloff>:/iconos/book.svg</normaloff>:/iconos/book.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>26</width>
+                 <height>26</height>
+                </size>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -1230,6 +1253,119 @@ border: 2px solid  rgb(50, 121, 129);
            </layout>
           </widget>
          </widget>
+         <widget class="QWidget" name="p_history">
+          <widget class="QTableWidget" name="tabla2_4">
+           <property name="geometry">
+            <rect>
+             <x>230</x>
+             <y>50</y>
+             <width>355</width>
+             <height>191</height>
+            </rect>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <attribute name="horizontalHeaderVisible">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="horizontalHeaderCascadingSectionResizes">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderDefaultSectionSize">
+            <number>80</number>
+           </attribute>
+           <attribute name="horizontalHeaderHighlightSections">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderMinimumSectionSize">
+            <number>20</number>
+           </attribute>
+           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="verticalHeaderCascadingSectionResizes">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="verticalHeaderStretchLastSection">
+            <bool>false</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>Pixel min</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Pixel Max</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Lat</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Long</string>
+            </property>
+           </column>
+          </widget>
+          <widget class="QTableWidget" name="tabla_d2_3">
+           <property name="geometry">
+            <rect>
+             <x>230</x>
+             <y>280</y>
+             <width>355</width>
+             <height>191</height>
+            </rect>
+           </property>
+           <attribute name="horizontalHeaderCascadingSectionResizes">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="horizontalHeaderDefaultSectionSize">
+            <number>162</number>
+           </attribute>
+           <attribute name="horizontalHeaderHighlightSections">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>Image</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>n_detection</string>
+            </property>
+           </column>
+          </widget>
+          <widget class="QPushButton" name="b_borrarbase">
+           <property name="geometry">
+            <rect>
+             <x>680</x>
+             <y>90</y>
+             <width>101</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Borrar_datos</string>
+           </property>
+          </widget>
+         </widget>
          <widget class="QWidget" name="p_model2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1343,6 +1479,32 @@ background-color: rgb(84, 205, 218);</string>
             </item>
             <item>
              <layout class="QHBoxLayout" name="ho_titulo2_2">
+              <item>
+               <widget class="QPushButton" name="b_original">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Original</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="b_process">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Process</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <spacer name="horizontalSpacer_12">
                 <property name="orientation">
@@ -1699,7 +1861,7 @@ border: 2px solid  rgb(50, 121, 129);
                    </sizepolicy>
                   </property>
                   <attribute name="horizontalHeaderVisible">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </attribute>
                   <attribute name="horizontalHeaderCascadingSectionResizes">
                    <bool>false</bool>
