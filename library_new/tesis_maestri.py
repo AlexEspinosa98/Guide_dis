@@ -16,6 +16,18 @@ import sqlite3
 
 from datetime import datetime
 
+
+from PIL import Image
+from PIL.TiffTags import TAGS
+import re
+import rasterio
+import rasterio.features
+import rasterio.warp
+from rasterio.transform import Affine
+import numpy as np 
+import cv2
+
+
 """/// Listado de funciones\\\
     self.ruta_variable => Variable que guarda la dir de folder
     self.ver_formato
@@ -71,10 +83,10 @@ def prediccion(ruta_imagen,model,lista_imagenes):
 
     # Obtener los resultados de la consulta
     resultados = cursor.fetchall()
-    print(resultados)
+    
 
     # Recorrer los resultados e imprimir los valores
-    print(resultados[1][3])
+    
     for indice,recorrido in enumerate(resultados):
         if (resultados[indice][3]==str(d)):
             id_datos=int(resultados[indice][0]) #ID de FK
@@ -83,7 +95,8 @@ def prediccion(ruta_imagen,model,lista_imagenes):
     #**********************************************# BASE DE DATOS TT
     for individual in lista_imagenes:
         ruta_total=ruta_imagen+"/"+individual
-        print(ruta_total)
+        ruta_rojatif=ruta_imagen+"/"+individual[0:7]+"1.TIF"
+        #print(ruta_total)
         image = Image.open(ruta_total)
         transform = transforms.Compose([
             transforms.Resize((1300, 1600)),
@@ -113,8 +126,6 @@ def prediccion(ruta_imagen,model,lista_imagenes):
         conexion = sqlite3.connect('./library_new/test.db')
         cursor = conexion.cursor()
 
-        # Definir los valores de nombre_imagen y id_registro_carpeta
-        id_registro_carpeta = 1
 
         # Consultar el id de la fila con nombre_imagen y id_registro_carpeta especificados
         cursor.execute("SELECT id FROM tabla_imagenes WHERE nombre_imagen = ? AND id_registro_carpeta = ?", (str(individual), int(id_datos)))
@@ -139,14 +150,17 @@ def prediccion(ruta_imagen,model,lista_imagenes):
             for box, label, score in zip(boxes, labels, scores):
                 x, y, x2, y2 = box.tolist()
                 
+                cx=int(x+((x2-x)//2))
+                cy=int(y+((y2-y)//2))
+                lat,longi =convertgps(cx,cy,ruta_rojatif)
                 #llenado de tabla 3
                 conn = sqlite3.connect('./library_new/test.db')
                 cursor = conn.cursor()
 
                 d = str(datetime.now())
                     # Insertar datos en la tabla
-                cursor.execute("INSERT INTO resultado_imagen (pixel_min,pixel_max,latitud,longitud,score,id_tabla_imagenes) VALUES (?, ?, ?)",
-                                (str([x,y]),str([x2,y2]),lat,longi,str(score),id_fila))
+                cursor.execute("INSERT INTO resultado_imagen (pixel_min,pixel_max,latitud,longitud,score,id_tabla_imagenes) VALUES (?, ?, ?, ?, ?, ?)",
+                                (str([int(x),int(y)]),str([int(x2),int(y2)]),str(longi),str(lat),str(score.item()),id_fila))
 
                     # Guardar los cambios y cerrar la conexión
                 conn.commit()
@@ -154,9 +168,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
                 # FIN DE LLENADO DE TABLA 3
                 #Nota: Tal vez lo de abajo ya no este
 
-                cv2.rectangle(imagen_etiquetada, (int(x), int(y)), (int(x2), int(y2)), (0, 255, 0), 2)
-                label_str = f'Class: {label.item()}, Score: {score.item():.2f}'
-                cv2.putText(imagen_etiquetada, label_str, (int(x), int(y) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                
                 # Crea un objeto Rectangle para el cuadro delimitador
                 """ rect = patches.Rectangle((x, y), w, h, linewidth=2, edgecolor='r', facecolor='none')
                 
@@ -167,6 +179,143 @@ def prediccion(ruta_imagen,model,lista_imagenes):
                 label_str = f'Clase: {label.item()}, score: {score.item():.2f}'
                 ax.text(x, y, label_str, fontsize=8, color='r', verticalalignment='top') """
         
+    
+
+
+
+# conversion de pixel a gps ////////////////////////////
+
+def metadata(imagen):
+    img = Image.open(imagen)
+# obtenemos los Tags de la metadata y se almacenan en un diccionario
+    meta_dict = {TAGS[key]: img.tag[key] for key in img.tag_v2}
+    # Se imprime el diccionario para obtener la composición de los datos
+    # for rec in meta_dict:
+    #     print(rec, ":", meta_dict[rec])
+
+    # Extraemos el indicador xmp
+    p = meta_dict.get("XMP")
+    s = p.decode("UTF-8")
+    # dividimos por el salto de linea y obtenemos una lista
+    div = s.split("\n")
+
+    #eliminamos los espacios vacios 
+
+    for ind,recorrido in enumerate(div):
+        div[ind]=recorrido.strip() 
+    usar = div[17]
+
+    result = re.search(":(.*)=", div[17])
+    result.group(1)
+
+    result2 = re.search("\"(.*)\"", div[17])
+    result2.group(1)
+
+    metadiccionario = {}
+    for ind,recorrido in enumerate(div):
+        try:
+            metadiccionario[re.search(":(.*)=", div[ind]).group(1)] = re.search("\"(.*)\"", div[ind]).group(1)
+        except:
+            pass
+
+    metadiccionario = {}
+    for ind,recorrido in enumerate(div):
+        try:
+            metadiccionario[re.search(":(.*)=", div[ind]).group(1)] = re.search("\"(.*)\"", div[ind]).group(1)
+        except:
+            pass
+
+    #print(metadiccionario)
+    return metadiccionario
+
+def TransfromRaster(img_path):
+    metadiccionario = metadata(img_path)
+    
+    altura_vuelo = float(metadiccionario["RelativeAltitude"])
+    distancia_focal = float(metadiccionario["CalibratedFocalLength"])
+
+    resolucion = altura_vuelo/distancia_focal
+   
+    min_lon = (float(metadiccionario["GpsLongitude"])) - (
+        float(metadiccionario["CalibratedOpticalCenterX"]) * resolucion) / 111111
+    max_lon = (float(metadiccionario["GpsLongitude"])) + (
+        float(metadiccionario["CalibratedOpticalCenterX"]) * resolucion) / 111111
+    min_lat = (float(metadiccionario["GpsLatitude"])) - (
+        float(metadiccionario["CalibratedOpticalCenterY"]) * resolucion) / 111111
+    max_lat = (float(metadiccionario["GpsLatitude"])) + (
+        float(metadiccionario["CalibratedOpticalCenterY"]) * resolucion) / 111111
+
+    img_data = rasterio.open(img_path, 'r')
+
+    bands = [1] #Se especifica las cantidades de canales que tiene la imagen.
+    count_bands = len(bands)
+    data = img_data.read(bands)
+    _, width, height = data.shape 
+
+    crs = {'init': 'epsg:4326'}
+
+    transform = rasterio.transform.from_bounds(
+            min_lon, min_lat, max_lon, max_lat, height, width)
+    
+    return transform
+
+def convertgps(x,y,path_red):
+
+    trans = TransfromRaster(path_red)
+    transfor = np.array([[trans.a, trans.b, trans.c], 
+                     [trans.d, trans.e, trans.f],
+                     [0, 0, 1]], dtype =np.float64)
+
+    xy = np.array([[x], #x
+               [y], #y
+               [1]], dtype=np.float64)
+
+    x=np.dot(transfor, xy)   
+    return x[0],x[1]
+
+def imagen_etiquetada(ruta,nombre_imagen):
+
+    imagen_etiquetada=cv2.imread(ruta+"/"+nombre_imagen,1)
+    imagen_etiquetada=cv2.cvtColor(imagen_etiquetada,cv2.COLOR_BGR2RGB)
+    conexion = sqlite3.connect('./library_new/test.db')
+    cursor = conexion.cursor()
+
+    # Nombre de la imagen y ruta a buscar
+
+    # Ejecutar la consulta
+    cursor.execute("SELECT * FROM tabla_imagenes AS ti JOIN resultado_imagen AS ri ON ti.id = ri.id_tabla_imagenes WHERE ti.nombre_imagen = ? AND ti.id_registro_carpeta IN (SELECT id FROM registro_carpeta WHERE ruta_carpeta = ?)", (nombre_imagen, ruta))
+    rows = cursor.fetchall()
+    #print(len(rows))
+    # Recorrer y mostrar los resultados
+    for row in rows:
+        # Acceder a los valores de las columnas
+        id_tabla_imagenes = row[0]
+        # ...
+        # Acceder a los valores de las columnas de resultado_imagen
+        pixel_min = row[5]
+        pixel_max = row[6]
+        latitud = row[7]
+        longitud = row[8]
+        score = row[9]
+        #print(f"{pixel_max} - {pixel_min} - {latitud} - {longitud} - {score}")
+
+        numbers = pixel_min.strip('[]').split(',')
+        # Convertir los números de cadena a enteros
+        x= int(numbers[0])
+        y = int(numbers[1])
+
+        numbers2= pixel_max.strip('[]').split(',')
+        # Convertir los números de cadena a enteros
+        x2= int(numbers2[0])
+        y2 = int(numbers2[1])
+
+        cv2.rectangle(imagen_etiquetada, (int(x), int(y)), (int(x2), int(y2)), (0, 255, 0), 2)
+        label_str = f'Class: {"Sigatoka"}, Score: {score:.2f}'
+        cv2.putText(imagen_etiquetada, label_str, (int(x), int(y) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+        # Hacer algo con los valores obtenidos
+
+    # Cerrar la conexión
+    conexion.close()
     return imagen_etiquetada
-
-
+    
+# conversion de pixel a gps //////////////////////////// dibujar imagen con respecto a la base de datos

@@ -29,6 +29,8 @@ import numpy as np
 import matplotlib.patches as patches
 from PIL import Image
 
+import sqlite3
+
 """/// Listado de variable  utilizadas y funciones\\
     self.ruta_variable => Variable que guarda la dir de folder
     self.list_image    => Variable que contiene la lista de imagenes
@@ -60,6 +62,9 @@ class mainUI(QMainWindow):
         self.b4_right_3.clicked.connect(self.pasarimage2)
         self.b3_left_2.clicked.connect(self.pasarimage)   #boton izquierda para pasar datos
         self.b4_right_2.clicked.connect(self.pasarimage2)
+
+        #borrado de base de dato
+        self.b_borrarbase.clicked.connect(self.borrartodo)
 
         #programando si es original o procesada para muestra de imagen
         self.b_original.clicked.connect(self.original)
@@ -119,12 +124,14 @@ class mainUI(QMainWindow):
     def proyect_image(self):
 
         if (self.timage):
-            self.image=self.resultado
-            print("aqui estoy self procesada")
+
+            self.image=imagen_etiquetada(self.ruta_carpeta,self.list_images[int(self.imgproyectada)])
+           # Aqui debe proyectarse la imagen con las etiquetas de la base de datos
+
         else: 
             self.image=cv2.imread(self.ruta_carpeta+'/'+self.list_images[int(self.imgproyectada)],1)
             self.image=cv2.cvtColor(self.image,cv2.COLOR_BGR2RGB)
-            print("aqui estoy 2_self oriignal ")
+            
         #self.image=cv2.imread(self.ruta_carpeta+'/'+self.list_images[int(self.imgproyectada)],1)
 
         self.image= cv2.resize(self.image, (520, 414), interpolation=cv2.INTER_LINEAR)
@@ -135,10 +142,10 @@ class mainUI(QMainWindow):
         img= img.rgbSwapped()
         if (self.pag):
             self.l_image_3.setPixmap(QPixmap.fromImage(img))
-            print("proyecte _ 3")
+            
         else:
             self.l_image_2.setPixmap(QPixmap.fromImage(img))
-            print("proyecte _ 2")
+            
             
         
     def pasarimage(self):
@@ -161,7 +168,7 @@ class mainUI(QMainWindow):
         if (self.ruta_carpeta):    
             #necesitamos direccion para ller la variable
         
-            self.resultado=prediccion(self.ruta_carpeta,self.modeld,self.list_images)
+            prediccion(self.ruta_carpeta,self.modeld,self.list_images)
             self.timage=1
             self.proyect_image()
 
@@ -172,6 +179,20 @@ class mainUI(QMainWindow):
 
     def historial(self):
         print("hola")
+    
+    #funcion para borrar las tablas de bdd
+    def borrartodo(self):
+        conexion = sqlite3.connect('./library_new/test.db')
+        cursor = conexion.cursor()
+        # Borrar todos los datos de la tabla "registro_carpeta"
+        cursor.execute("DELETE FROM registro_carpeta")
+        # Borrar todos los datos de la tabla "tabla_imagenes"
+        cursor.execute("DELETE FROM tabla_imagenes")
+        # Borrar todos los datos de la tabla "resultado_imagen"
+        cursor.execute("DELETE FROM resultado_imagen")
+        # Confirmar los cambios
+        conexion.commit()
+        conexion.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
