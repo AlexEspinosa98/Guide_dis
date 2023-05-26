@@ -273,6 +273,8 @@ def convertgps(x,y,path_red):
     x=np.dot(transfor, xy)   
     return x[0],x[1]
 
+
+# conversion de pixel a gps //////////////////////////// dibujar imagen con respecto a la base de datos
 def imagen_etiquetada(ruta,nombre_imagen):
 
     imagen_etiquetada=cv2.imread(ruta+"/"+nombre_imagen,1)
@@ -309,13 +311,74 @@ def imagen_etiquetada(ruta,nombre_imagen):
         x2= int(numbers2[0])
         y2 = int(numbers2[1])
 
-        cv2.rectangle(imagen_etiquetada, (int(x), int(y)), (int(x2), int(y2)), (0, 255, 0), 2)
-        label_str = f'Class: {"Sigatoka"}, Score: {score:.2f}'
-        cv2.putText(imagen_etiquetada, label_str, (int(x), int(y) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+        cv2.rectangle(imagen_etiquetada, (int(x), int(y)), (int(x2), int(y2)), (255, 0, 0), 2)
+        label_str = f'Score: {score:.2f}'
+        cv2.putText(imagen_etiquetada, label_str, (int(x), int(y) - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
         # Hacer algo con los valores obtenidos
 
     # Cerrar la conexión
     conexion.close()
     return imagen_etiquetada
     
-# conversion de pixel a gps //////////////////////////// dibujar imagen con respecto a la base de datos
+
+
+#### consulta de b dicionario para tablas
+
+def consulta_tablas1(ruta_carpeta):
+   
+    lista_dic =[]
+    conexion = sqlite3.connect('./library_new/test.db')  # Reemplaza con el nombre de tu base de datos
+    cursor = conexion.cursor()
+
+        # Consulta SQL para obtener los nombres de las imágenes y la cantidad de detecciones
+    consulta = '''
+            SELECT i.nombre_imagen, i.cantidad_detect
+            FROM tabla_imagenes AS i
+            INNER JOIN registro_carpeta AS rc ON i.id_registro_carpeta = rc.id
+            WHERE rc.ruta_carpeta = ?
+        '''
+
+        # Ejecutar la consulta y obtener los resultados
+    cursor.execute(consulta, (ruta_carpeta,))
+    resultados = cursor.fetchall()
+    conexion.close()
+
+        # Recorrer los resultados e imprimir los nombres de las imágenes y la cantidad de detecciones
+    for nombre_imagen, cantidad_detect in resultados:
+            #print(f'Imagen: {nombre_imagen}, Detecciones: {cantidad_detect}')
+            diccionario = {"nombre": nombre_imagen, "n_detection": cantidad_detect}
+            lista_dic.append(diccionario)
+    return lista_dic
+
+
+def actualizar_tabla2(ruta_carpeta,nombre_imagen):
+    
+    conexion = sqlite3.connect('./library_new/test.db')  # Reemplaza con el nombre de tu base de datos
+    cursor = conexion.cursor()
+    # Consulta SQL para obtener los datos de resultado_imagen relacionados con nombre_imagen y ruta_carpeta
+    consulta = '''
+        SELECT ri.*
+        FROM resultado_imagen AS ri
+        INNER JOIN tabla_imagenes AS ti ON ri.id_tabla_imagenes = ti.id
+        INNER JOIN registro_carpeta AS rc ON ti.id_registro_carpeta = rc.id
+        WHERE ti.nombre_imagen = ? AND rc.ruta_carpeta = ?
+    '''
+
+    # Ejecutar la consulta y obtener los resultados
+    cursor.execute(consulta, (nombre_imagen, ruta_carpeta))
+    resultados = cursor.fetchall()
+    conexion.close()
+    lista_dic=[]
+    # Recorrer los resultados y procesar los datos
+    for resultado in resultados:
+        # Acceder a los campos de la tabla resultado_imagen
+        #id_resultado = resultado[0]
+        pixel_min = resultado[1]
+        pixel_max = resultado[2]
+        latitud = resultado[3]
+        longitud = resultado[4]
+        # Hacer algo con los datos...
+        diccionario = {"pixel_min": pixel_min, "pixel_max": pixel_max, "lat":latitud,"long":longitud}
+        lista_dic.append(diccionario)
+
+    return lista_dic

@@ -201,7 +201,7 @@ background-color: rgb(85, 205, 218);
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
+            <layout class="QHBoxLayout" name="horizontalLayout" stretch="">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -217,44 +217,6 @@ background-color: rgb(85, 205, 218);
              <property name="bottomMargin">
               <number>10</number>
              </property>
-             <item alignment="Qt::AlignTop">
-              <widget class="QPushButton" name="b_menu">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="font">
-                <font>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="mouseTracking">
-                <bool>false</bool>
-               </property>
-               <property name="toolTip">
-                <string>menu main</string>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="recursos.qrc">
-                 <normaloff>:/iconos/align-justify.svg</normaloff>:/iconos/align-justify.svg</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>26</width>
-                 <height>26</height>
-                </size>
-               </property>
-              </widget>
-             </item>
             </layout>
            </widget>
           </item>
@@ -624,6 +586,7 @@ background-color: rgb(63, 152, 162);
 
 QTableWidget{
 	background-color: rgb(255,255,255);
+	color: rgb(0,0,0);
 }
 
 QPushButton:hover{
@@ -1257,7 +1220,7 @@ border: 2px solid  rgb(50, 121, 129);
           <widget class="QTableWidget" name="tabla2_4">
            <property name="geometry">
             <rect>
-             <x>230</x>
+             <x>120</x>
              <y>50</y>
              <width>355</width>
              <height>191</height>
@@ -1323,8 +1286,8 @@ border: 2px solid  rgb(50, 121, 129);
           <widget class="QTableWidget" name="tabla_d2_3">
            <property name="geometry">
             <rect>
-             <x>230</x>
-             <y>280</y>
+             <x>130</x>
+             <y>290</y>
              <width>355</width>
              <height>191</height>
             </rect>
@@ -1853,7 +1816,7 @@ border: 2px solid  rgb(50, 121, 129);
                  <number>5</number>
                 </property>
                 <item>
-                 <widget class="QTableWidget" name="tabla2_2">
+                 <widget class="QTableWidget" name="tabla_detec">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
@@ -1864,16 +1827,16 @@ border: 2px solid  rgb(50, 121, 129);
                    <bool>false</bool>
                   </attribute>
                   <attribute name="horizontalHeaderCascadingSectionResizes">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </attribute>
                   <attribute name="horizontalHeaderDefaultSectionSize">
-                   <number>80</number>
+                   <number>85</number>
                   </attribute>
                   <attribute name="horizontalHeaderHighlightSections">
                    <bool>false</bool>
                   </attribute>
                   <attribute name="horizontalHeaderMinimumSectionSize">
-                   <number>20</number>
+                   <number>39</number>
                   </attribute>
                   <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                    <bool>false</bool>

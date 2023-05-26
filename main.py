@@ -74,6 +74,8 @@ class mainUI(QMainWindow):
         # modelo de deteccion
         self.modeld = torch.load(("./library_new/modelo/content"),map_location=torch.device('cpu'))
         self.modeld.eval()
+
+        self.tabla2_4.setItem(0,0,QtWidgets.QTableWidgetItem("hola"))
     
     def original(self):
         self.timage=0
@@ -127,7 +129,7 @@ class mainUI(QMainWindow):
 
             self.image=imagen_etiquetada(self.ruta_carpeta,self.list_images[int(self.imgproyectada)])
            # Aqui debe proyectarse la imagen con las etiquetas de la base de datos
-
+            self.actualizartabla1()
         else: 
             self.image=cv2.imread(self.ruta_carpeta+'/'+self.list_images[int(self.imgproyectada)],1)
             self.image=cv2.cvtColor(self.image,cv2.COLOR_BGR2RGB)
@@ -171,6 +173,9 @@ class mainUI(QMainWindow):
             prediccion(self.ruta_carpeta,self.modeld,self.list_images)
             self.timage=1
             self.proyect_image()
+            self.llenartabla2()
+            mensaje = "complete"
+            QMessageBox.information(self, "information", mensaje)
 
         else:
             mensaje = "the folder has not been selected"
@@ -193,6 +198,25 @@ class mainUI(QMainWindow):
         # Confirmar los cambios
         conexion.commit()
         conexion.close()
+
+    def llenartabla2(self):
+        print("llenado tabla ")
+        dic=consulta_tablas1(self.ruta_carpeta)
+        #row=0
+        self.tabla_d2.setRowCount(len(dic))
+        for indice,imagenes in enumerate(dic):
+            self.tabla_d2.setItem(indice,0,QtWidgets.QTableWidgetItem(str(imagenes["nombre"])))
+            self.tabla_d2.setItem(indice,1,QtWidgets.QTableWidgetItem(str(imagenes["n_detection"])))
+    
+    def actualizartabla1(self):
+       
+        dic2=actualizar_tabla2(self.ruta_carpeta,self.list_images[int(self.imgproyectada)])
+        for indice,imagenes in enumerate(dic2):
+            print(imagenes)
+            self.tabla_detec.setItem(indice,0,QtWidgets.QTableWidgetItem(str(imagenes["pixel_min"])))
+            self.tabla_detec.setItem(indice,1,QtWidgets.QTableWidgetItem(str(imagenes["pixel_max"])))
+            self.tabla_detec.setItem(indice,2,QtWidgets.QTableWidgetItem(str(imagenes["lat"])))
+            self.tabla_detec.setItem(indice,3,QtWidgets.QTableWidgetItem(str(imagenes["long"])))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
