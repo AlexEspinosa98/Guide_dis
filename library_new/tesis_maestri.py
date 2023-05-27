@@ -26,7 +26,8 @@ import rasterio.warp
 from rasterio.transform import Affine
 import numpy as np 
 import cv2
-
+import csv  # libreria para convertir a csv
+import shapefile # libreria para shape
 
 """/// Listado de funciones\\\
     self.ruta_variable => Variable que guarda la dir de folder
@@ -383,3 +384,67 @@ def actualizar_tabla2(ruta_carpeta,nombre_imagen):
 
     return lista_dic
 
+def obtener_latitudylongitudes(ruta_carpeta):
+    conexion = sqlite3.connect("./library_new/test.db")  # Reemplaza con el nombre de tu base de datos
+    cursor = conexion.cursor()
+
+    # Realizar la consulta utilizando JOIN para combinar las tablas
+    consulta = '''SELECT r.latitud, r.longitud
+                  FROM resultado_imagen r
+                  INNER JOIN tabla_imagenes t ON r.id_tabla_imagenes = t.id
+                  INNER JOIN registro_carpeta rc ON t.id_registro_carpeta = rc.id
+                  WHERE rc.ruta_carpeta = ?'''
+    
+    cursor.execute(consulta, (ruta_carpeta,))
+    resultados = cursor.fetchall()
+
+    conexion.close()
+
+    # Crear una lista con las latitudes y longitudes
+    latitudes_longitudes = [(latitud, longitud) for latitud, longitud in resultados]
+
+    return latitudes_longitudes
+
+def convertir_a_shapefile(ruta):
+    nombre_archivo="resultado.shp"
+    latitudes_longitudes=obtener_latitudylongitudes(ruta)
+    w = shapefile.Writer(nombre_archivo, shapeType=shapefile.POINT)
+    w.field('Latitud', 'F', decimal=10)
+    w.field('Longitud', 'F', decimal=10)
+
+    for latitud, longitud in latitudes_longitudes:
+        latitud = float(latitud.strip('[]'))
+        longitud = float(longitud.strip('[]'))
+        w.point(longitud, latitud)
+        w.record(latitud, longitud)
+
+    w.close()
+
+def enumerar_en_csv(ruta):
+    nombre_archivo="resultado.csv"
+    latitudes_longitudes=obtener_latitudylongitudes(ruta)
+    with open(nombre_archivo, 'w', newline='') as archivo_csv:
+        writer = csv.writer(archivo_csv)
+        writer.writerow(['Latitud', 'Longitud'])
+        for latitud, longitud in latitudes_longitudes:
+            writer.writerow([latitud.strip('[]'), longitud.strip('[]')])
+
+# No he definido la creacion de carpeta bien :D lo mas probable es que sea con la fecha
+def crear_carpeta(nombre, direccion):
+    # Comprobar si el nombre de la carpeta ya existe en la dirección
+    carpeta_existente = False
+    contador = 1
+    nuevo_nombre = nombre
+    
+    while not carpeta_existente:
+        carpeta_path = os.path.join(direccion, nuevo_nombre)
+        if not os.path.exists(carpeta_path):
+            # El nombre de la carpeta no existe, crear la carpeta y salir del bucle
+            os.makedirs(carpeta_path)
+            carpeta_existente = True
+        else:
+            # El nombre de la carpeta ya existe, añadir sufijo y continuar la búsqueda
+            contador += 1
+            nuevo_nombre = f"{nombre}_v{contador}"
+
+    return nuevo_nombre

@@ -226,8 +226,10 @@ class mainUI(QMainWindow):
 
     def downloadshape(self):
         print("hola1")
+        convertir_a_shapefile(self.ruta_carpeta)
     def downloadcsv(self):
         print("hola2")
+        enumerar_en_csv(self.ruta_carpeta)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ui = mainUI()
