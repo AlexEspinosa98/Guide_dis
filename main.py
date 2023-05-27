@@ -63,6 +63,9 @@ class mainUI(QMainWindow):
         self.b3_left_2.clicked.connect(self.pasarimage)   #boton izquierda para pasar datos
         self.b4_right_2.clicked.connect(self.pasarimage2)
 
+        # Botones para 
+        self.b5_csv_2.clicked.connect(self.downloadcsv)
+        self.b5_csv_2.clicked.connect(self.downloadshape)
         #borrado de base de dato
         self.b_borrarbase.clicked.connect(self.borrartodo)
 
@@ -221,6 +224,10 @@ class mainUI(QMainWindow):
             self.tabla_r.setItem(indice,2,QtWidgets.QTableWidgetItem(str(imagenes["lat"])))
             self.tabla_r.setItem(indice,3,QtWidgets.QTableWidgetItem(str(imagenes["long"])))
 
+    def downloadshape(self):
+        print("hola1")
+    def downloadcsv(self):
+        print("hola2")
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ui = mainUI()

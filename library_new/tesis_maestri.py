@@ -382,3 +382,4 @@ def actualizar_tabla2(ruta_carpeta,nombre_imagen):
         lista_dic.append(diccionario)
 
     return lista_dic
+
