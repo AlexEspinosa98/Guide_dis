@@ -406,9 +406,10 @@ def obtener_latitudylongitudes(ruta_carpeta):
     return latitudes_longitudes
 
 def convertir_a_shapefile(ruta):
-    nombre_archivo="resultado.shp"
+
     latitudes_longitudes=obtener_latitudylongitudes(ruta)
-    w = shapefile.Writer(nombre_archivo, shapeType=shapefile.POINT)
+    nombre_archivo=crear_carpeta(ruta)
+    w = shapefile.Writer(nombre_archivo+"/resultados.shp", shapeType=shapefile.POINT)
     w.field('Latitud', 'F', decimal=10)
     w.field('Longitud', 'F', decimal=10)
 
@@ -421,30 +422,51 @@ def convertir_a_shapefile(ruta):
     w.close()
 
 def enumerar_en_csv(ruta):
-    nombre_archivo="resultado.csv"
+    
     latitudes_longitudes=obtener_latitudylongitudes(ruta)
-    with open(nombre_archivo, 'w', newline='') as archivo_csv:
+    nombre_archivo=crear_carpeta(ruta)
+    with open(nombre_archivo+"/resultado.csv", 'w', newline='') as archivo_csv:
         writer = csv.writer(archivo_csv)
         writer.writerow(['Latitud', 'Longitud'])
         for latitud, longitud in latitudes_longitudes:
             writer.writerow([latitud.strip('[]'), longitud.strip('[]')])
 
 # No he definido la creacion de carpeta bien :D lo mas probable es que sea con la fecha
-def crear_carpeta(nombre, direccion):
-    # Comprobar si el nombre de la carpeta ya existe en la dirección
-    carpeta_existente = False
-    contador = 1
-    nuevo_nombre = nombre
-    
-    while not carpeta_existente:
-        carpeta_path = os.path.join(direccion, nuevo_nombre)
-        if not os.path.exists(carpeta_path):
-            # El nombre de la carpeta no existe, crear la carpeta y salir del bucle
-            os.makedirs(carpeta_path)
-            carpeta_existente = True
-        else:
-            # El nombre de la carpeta ya existe, añadir sufijo y continuar la búsqueda
-            contador += 1
-            nuevo_nombre = f"{nombre}_v{contador}"
+def crear_carpeta(direccion_carpeta):
+    # Establecer conexión con la base de datos
+    conexion = sqlite3.connect('./library_new/test.db')  # Reemplaza con el nombre de tu base de datos
 
-    return nuevo_nombre
+    # Crear un cursor
+    cursor = conexion.cursor()
+
+    # Ejecutar la consulta para obtener la fecha asociada a la dirección de carpeta
+    cursor.execute("SELECT fecha FROM registro_carpeta WHERE ruta_carpeta = ?", (direccion_carpeta,))
+
+    # Obtener el resultado de la consulta
+    resultado = cursor.fetchone()
+
+    # Cerrar la conexión con la base de datos
+    conexion.close()
+    if resultado:
+        fecha = resultado[0]
+
+        # Modificar el formato de la fecha
+        fecha_valida = re.sub(r'[^0-9a-zA-Z]+', '_', fecha)
+
+        # Crear la carpeta con el nombre de la fecha válida
+        carpeta_fecha = os.path.join(direccion_carpeta, fecha_valida)
+
+        # Verificar si la carpeta ya existe
+        contador = 1
+        carpeta_alternativa = carpeta_fecha
+        while os.path.exists(carpeta_alternativa):
+            carpeta_alternativa = f"{carpeta_fecha}_v{contador}"
+            contador += 1
+
+        # Crear la carpeta alternativa
+        os.makedirs(carpeta_alternativa)
+        print(f"Se ha creado la carpeta {carpeta_alternativa}")
+    else:
+        print(f"No se encontró ninguna fecha para la carpeta {direccion_carpeta}")
+
+    return carpeta_alternativa
