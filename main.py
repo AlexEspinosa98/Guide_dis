@@ -186,7 +186,23 @@ class mainUI(QMainWindow):
 
 
     def historial(self):
-        print("hola")
+        self.list_combo.clear()
+        connection = sqlite3.connect("./library_new/test.db")  # Replace "your_database.db" with your actual database file name
+
+        # Create a cursor
+        cursor = connection.cursor()
+
+        # Execute the query to fetch all the dates from the first table
+        cursor.execute("SELECT fecha FROM registro_carpeta")
+
+        # Fetch all the results
+        dates = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        if len(dates)>0:
+            for fechas in dates:
+                self.list_combo.addItem(fechas[0])
+    
     
     #funcion para borrar las tablas de bdd
     def borrartodo(self):
@@ -203,14 +219,17 @@ class mainUI(QMainWindow):
         conexion.close()
 
     def llenartabla2(self):
-        
-        dic=consulta_tablas1(self.ruta_carpeta)
-        
-        self.tabla_d2.setRowCount(len(dic))
-        for indice,imagenes in enumerate(dic):
-            self.tabla_d2.setItem(indice,0,QtWidgets.QTableWidgetItem(str(imagenes["nombre"])))
-            self.tabla_d2.setItem(indice,1,QtWidgets.QTableWidgetItem(str(imagenes["n_detection"])))
-    
+        if (self.timage):
+            dic=consulta_tablas1(self.ruta_carpeta)
+            
+            self.tabla_d2.setRowCount(len(dic))
+            for indice,imagenes in enumerate(dic):
+                self.tabla_d2.setItem(indice,0,QtWidgets.QTableWidgetItem(str(imagenes["nombre"])))
+                self.tabla_d2.setItem(indice,1,QtWidgets.QTableWidgetItem(str(imagenes["n_detection"])))
+        else:
+            mensaje = "the folder has not been process"
+            QMessageBox.critical(self, "Error", mensaje) 
+            
     def actualizartabla1(self):
         if (self.timage):
             dic2=actualizar_tabla2(self.ruta_carpeta,self.list_images[int(self.imgproyectada)])
@@ -225,11 +244,20 @@ class mainUI(QMainWindow):
             self.tabla_r.setItem(indice,3,QtWidgets.QTableWidgetItem(str(imagenes["long"])))
 
     def downloadshape(self):
-        print("hola1")
-        convertir_a_shapefile(self.ruta_carpeta)
+        if (self.timage):
+            #print("hola1")
+            convertir_a_shapefile(self.ruta_carpeta)
+        else: 
+            mensaje = "the folder has not been process"
+            QMessageBox.critical(self, "Error", mensaje)
+            
     def downloadcsv(self):
-        print("hola2")
-        enumerar_en_csv(self.ruta_carpeta)
+        #print("hola2")
+        if (self.timage):
+            enumerar_en_csv(self.ruta_carpeta)
+        else: 
+            mensaje = "the folder has not been process"
+            QMessageBox.critical(self, "Error", mensaje)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ui = mainUI()
