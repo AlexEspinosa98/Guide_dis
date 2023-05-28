@@ -1,0 +1,6 @@
+
+Tareasre
+- Programar error de boton csv y shape cuando se realice la prediccion 
+- Reiniciar todas las variables cuando se cambie de ventana
+- Tratar de terminar la ventana de clasificacion 
+- Terminar la ventana de historial
