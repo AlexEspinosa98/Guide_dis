@@ -3,8 +3,8 @@ from PyQt6.QtWidgets import QMainWindow, QApplication,QLineEdit,QMessageBox,QTab
 
 from PyQt6.QtGui import QGuiApplication,QIcon,QImage,QPixmap
 from PyQt6 import QtCore, QtWidgets
-from PyQt6.QtCore import Qt,QPropertyAnimation
-
+from PyQt6.QtCore import QPropertyAnimation, Qt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import sys
 from PyQt6.uic import loadUi
 #import recursos
@@ -49,7 +49,9 @@ class mainUI(QMainWindow):
         self.imgproyectada=-1
         self.pag=0
         self.timage=0
+        self.hact=0
         self.b_home.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_home))	 #botones para cambiar de pagina
+        self.b_home.clicked.connect(self.fun_home)
         self.b_model1.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_model1))
         self.b_history.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_history))
         self.b_history.clicked.connect(self.historial)
@@ -62,10 +64,10 @@ class mainUI(QMainWindow):
         self.b4_right_3.clicked.connect(self.pasarimage2)
         self.b3_left_2.clicked.connect(self.pasarimage)   #boton izquierda para pasar datos
         self.b4_right_2.clicked.connect(self.pasarimage2)
-
+    
         # Botones para 
         self.b5_csv_2.clicked.connect(self.downloadcsv)
-        self.b5_csv_2.clicked.connect(self.downloadshape)
+        self.b6_shape_2.clicked.connect(self.downloadshape)
         #borrado de base de dato
         self.b_borrarbase.clicked.connect(self.borrartodo)
 
@@ -73,31 +75,59 @@ class mainUI(QMainWindow):
         self.b_original.clicked.connect(self.original)
         self.b_process.clicked.connect(self.procesada)
 
+
+        #boton de seleccionar el historial
+        self.list_combo.currentIndexChanged.connect(self.mostrar_estadisticas)
+        self.b_csv_history.clicked.connect(self.downloadcsv)
+        self.b_shape_history.clicked.connect(self.downloadshape)
+        self.b_delete_selec.clicked.connect(self.borrarselect)
         self.b2_process_2.clicked.connect(self.procesar_detection)
         # modelo de deteccion
         self.modeld = torch.load(("./library_new/modelo/content"),map_location=torch.device('cpu'))
         self.modeld.eval()
 
-        
+    def fun_home(self):
+        self.hact=0
     
     def original(self):
-        self.timage=0
-        self.proyect_image()
+        if (self.ruta_carpeta):
+            self.timage=0
+            self.proyect_image()
     def procesada(self):
+        if (self.timage ):
+            #print("hola1")
+            self.timage=1
+            self.proyect_image()
+        else: 
+            mensaje = "the folder has not been process"
+            QMessageBox.critical(self, "Error", mensaje)
         # falta comprobacion si ya procesaron :D
-        self.timage=1
-        self.proyect_image()
+        
 
     def identificador(self):
         if (self.pag):
+            self.hact=0
+            self.l_image_3.clear() 
+            self.tabla_d2_2.clearContents()
+            self.tabla2_3.clearContents()
+            self.tabla_d2_2.setRowCount(0)
+            self.timage=0
+            self.ruta_carpeta=None
             if (self.ruta_carpeta):
                 self.pag=0
-                self.imgproyectada=0    
+                self.imgproyectada=0 
                 self.proyect_image()
+                
 
     def identificador2(self):
         if (not(self.pag)):
-            
+            self.hact=0
+            self.l_image_2.clear()
+            self.tabla_d2.clearContents()
+            self.tabla_r.clearContents()
+            self.tabla_d2.setRowCount(0)
+            self.timage=0
+            self.ruta_carpeta=None
             if (self.ruta_carpeta):
                 self.pag=1
                 self.imgproyectada=0
@@ -154,20 +184,26 @@ class mainUI(QMainWindow):
             
         
     def pasarimage(self):
-        
-        if self.imgproyectada==0:
-            self.imgproyectada=int(len(self.list_images))-1
-        else:
-            self.imgproyectada-=1
-        self.proyect_image()
+        if(self.ruta_carpeta):
+            if self.imgproyectada==0:
+                self.imgproyectada=int(len(self.list_images))-1
+            else:
+                self.imgproyectada-=1
+            self.proyect_image()
+        else: 
+            mensaje = "The folder has not been selected"
+            QMessageBox.critical(self, "Error", mensaje)
 
     def pasarimage2(self):
-        
-        if self.imgproyectada==int(len(self.list_images))-1:
-            self.imgproyectada=0
+        if(self.ruta_carpeta):
+            if self.imgproyectada==int(len(self.list_images))-1:
+                self.imgproyectada=0
+            else:
+                self.imgproyectada+=1
+            self.proyect_image()
         else:
-            self.imgproyectada+=1
-        self.proyect_image()
+            mensaje = "The folder has not been selected"
+            QMessageBox.critical(self, "Error", mensaje)
     
     def procesar_detection(self):
         if (self.ruta_carpeta):    
@@ -187,6 +223,7 @@ class mainUI(QMainWindow):
 
     def historial(self):
         self.list_combo.clear()
+        self.label_history.clear()
         connection = sqlite3.connect("./library_new/test.db")  # Replace "your_database.db" with your actual database file name
 
         # Create a cursor
@@ -199,6 +236,8 @@ class mainUI(QMainWindow):
         dates = cursor.fetchall()
         cursor.close()
         connection.close()
+        self.tabla_d2_3.clearContents()
+        self.list_combo.addItem("--------------------")
         if len(dates)>0:
             for fechas in dates:
                 self.list_combo.addItem(fechas[0])
@@ -217,6 +256,7 @@ class mainUI(QMainWindow):
         # Confirmar los cambios
         conexion.commit()
         conexion.close()
+        self.historial()
 
     def llenartabla2(self):
         if (self.timage):
@@ -235,7 +275,9 @@ class mainUI(QMainWindow):
             dic2=actualizar_tabla2(self.ruta_carpeta,self.list_images[int(self.imgproyectada)])
         else:
             dic2=[]
+        self.tabla_r.clearContents()
         self.tabla_r.setRowCount(len(dic2))
+        #print(dic2)
         for indice,imagenes in enumerate(dic2):
             
             self.tabla_r.setItem(indice,0,QtWidgets.QTableWidgetItem(str(imagenes["pixel_min"])))
@@ -244,20 +286,74 @@ class mainUI(QMainWindow):
             self.tabla_r.setItem(indice,3,QtWidgets.QTableWidgetItem(str(imagenes["long"])))
 
     def downloadshape(self):
-        if (self.timage):
+        if (self.timage or self.hact):
             #print("hola1")
             convertir_a_shapefile(self.ruta_carpeta)
+            mensaje = "Generated Shape"
+            QMessageBox.information(self, "information", mensaje)
         else: 
             mensaje = "the folder has not been process"
             QMessageBox.critical(self, "Error", mensaje)
             
     def downloadcsv(self):
         #print("hola2")
-        if (self.timage):
+        if (self.timage or self.hact):
             enumerar_en_csv(self.ruta_carpeta)
+            mensaje = "Generated CSV"
+            QMessageBox.information(self, "information", mensaje)
         else: 
             mensaje = "the folder has not been process"
             QMessageBox.critical(self, "Error", mensaje)
+
+    def mostrar_estadisticas(self):
+        historial=self.list_combo.currentText()
+        if (historial!="--------------------"):
+            registro=consulta_porfecha(historial)
+            self.tabla_d2_3.clearContents()
+            self.tabla_d2_3.setRowCount(len(registro))
+            for indice,regist in enumerate(registro):
+                self.tabla_d2_3.setItem(indice,0,QtWidgets.QTableWidgetItem(regist["nombre"]))
+                self.tabla_d2_3.setItem(indice,1,QtWidgets.QTableWidgetItem(str(regist["cant"])))
+            # Graficar 
+            if (len(registro)>0):
+                self.label_history.clear()
+                valores = [dato['cant'] for dato in registro]
+                etiquetas = ['Not Sigatoka', 'Sigatoka']
+                comparar_cero = lambda valor: valor == 0
+                cantidad_ceros = len(list(filter(comparar_cero, valores)))
+                comparar_ncero = lambda valor: valor > 0
+                cantidad_nceros = len(list(filter(comparar_ncero, valores)))
+                v_g=[cantidad_ceros,cantidad_nceros]
+                fig, ax = plt.subplots()
+                wedges, texts, autotexts = ax.pie(v_g, labels=etiquetas, colors=['#ffcc99', '#99ff99'], autopct=lambda pct: f"{pct:.1f}%\n({int(round(pct/100*sum(v_g), 0))})",
+                                    textprops={'fontsize': 10}, startangle=90)
+                plt.setp(autotexts, size=8, weight='bold')
+                ax.set_title('Areas with Sigatoka')
+                canvas = FigureCanvas(fig)
+                canvas.draw()
+                pixmal=canvas.grab()
+                pixmal=pixmal.scaled(450,259, transformMode=Qt.TransformationMode.SmoothTransformation)
+                self.label_history.setPixmap(pixmal)
+
+            conn = sqlite3.connect('./library_new/test.db')
+            cursor = conn.cursor()
+
+            # Obtener la ruta de carpeta por fecha en la primera tabla
+            fecha = str(historial)
+            cursor.execute("SELECT ruta_carpeta FROM registro_carpeta WHERE fecha = ?", (fecha,))
+            resultado = cursor.fetchone()
+
+            conn.close()
+            if (resultado):
+                self.ruta_carpeta=resultado[0]
+            self.hact=1
+    def borrarselect(self):
+        historial=self.list_combo.currentText()
+        if (historial!="--------------------"):
+            borrar_porfecha(historial)
+            self.historial()
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ui = mainUI()

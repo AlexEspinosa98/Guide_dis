@@ -465,8 +465,56 @@ def crear_carpeta(direccion_carpeta):
 
         # Crear la carpeta alternativa
         os.makedirs(carpeta_alternativa)
-        print(f"Se ha creado la carpeta {carpeta_alternativa}")
-    else:
-        print(f"No se encontró ninguna fecha para la carpeta {direccion_carpeta}")
+        #print(f"Se ha creado la carpeta {carpeta_alternativa}")
+    
 
     return carpeta_alternativa
+
+def consulta_porfecha(fecha):
+   
+    conexion = sqlite3.connect('./library_new/test.db')  # Reemplaza con el nombre de tu base de datos
+
+    # Crear un cursor
+    cursor = conexion.cursor()
+
+    # Ejecutar la consulta
+    cursor.execute("""
+        SELECT tabla_imagenes.cantidad_detect, tabla_imagenes.nombre_imagen
+        FROM tabla_imagenes
+        JOIN registro_carpeta ON tabla_imagenes.id_registro_carpeta = registro_carpeta.id
+        WHERE registro_carpeta.fecha = ?
+        """, (str(fecha),))
+
+
+    # Obtener los resultados de la consulta
+    resultados = cursor.fetchall()
+
+    # Cerrar la conexión con la base de datos
+    conexion.close()
+    lista_dic=[]
+    # Recorrer los resultados y procesar los datos
+    for cantidad,nombre in resultados:
+        diccionario={"nombre": nombre, "cant": cantidad}
+        lista_dic.append(diccionario)
+    return lista_dic
+
+def borrar_porfecha(fecha):
+    conexion = sqlite3.connect('./library_new/test.db')  # Reemplaza con el nombre de tu base de datos
+
+    # Crear un cursor
+    cursor = conexion.cursor()
+    cursor.execute("SELECT id FROM registro_carpeta WHERE fecha = ?", (fecha,))
+    registro_carpeta_id = cursor.fetchone()[0]
+
+    # Delete rows from the resultado_imagen table associated with the registro_carpeta_id
+    cursor.execute("DELETE FROM resultado_imagen WHERE id_tabla_imagenes IN (SELECT id FROM tabla_imagenes WHERE id_registro_carpeta = ?)", (registro_carpeta_id,))
+
+    # Delete rows from the tabla_imagenes table associated with the registro_carpeta_id
+    cursor.execute("DELETE FROM tabla_imagenes WHERE id_registro_carpeta = ?", (registro_carpeta_id,))
+
+    # Delete the row from the registro_carpeta table
+    cursor.execute("DELETE FROM registro_carpeta WHERE fecha = ?", (fecha,))
+
+    # Commit the changes to the database
+    conexion.commit()
+    conexion.close()

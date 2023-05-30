@@ -1223,7 +1223,7 @@ border: 2px solid  rgb(50, 121, 129);
           </widget>
          </widget>
          <widget class="QWidget" name="p_history">
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -1349,9 +1349,59 @@ border: 2px solid  rgb(50, 121, 129);
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton">
+                  <widget class="QPushButton" name="b_delete_selec">
                    <property name="text">
                     <string>Delete Selected</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_6">
+                   <property name="font">
+                    <font>
+                     <pointsize>15</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                   </property>
+                   <property name="autoFillBackground">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>EXPORT RESULTS</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="b_csv_history">
+                   <property name="text">
+                    <string>CSV</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="b_shape_history">
+                   <property name="text">
+                    <string>Shape</string>
                    </property>
                   </widget>
                  </item>
@@ -1360,10 +1410,13 @@ border: 2px solid  rgb(50, 121, 129);
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
                    </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Minimum</enum>
+                   </property>
                    <property name="sizeHint" stdset="0">
                     <size>
                      <width>20</width>
-                     <height>180</height>
+                     <height>20</height>
                     </size>
                    </property>
                   </spacer>
@@ -1418,7 +1471,7 @@ border: 2px solid  rgb(50, 121, 129);
                </spacer>
               </item>
               <item>
-               <widget class="QLabel" name="label_5">
+               <widget class="QLabel" name="label_history">
                 <property name="minimumSize">
                  <size>
                   <width>450</width>
