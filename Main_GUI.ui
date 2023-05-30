@@ -603,7 +603,7 @@ background-color: rgb(85, 205, 218);
           <enum>QFrame::Plain</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="p_home">
           <property name="sizePolicy">
@@ -760,6 +760,20 @@ background-color: rgb(84, 205, 218);</string>
             </item>
             <item>
              <layout class="QHBoxLayout" name="ho_titulo2_3">
+              <item>
+               <widget class="QPushButton" name="pushButton">
+                <property name="text">
+                 <string>original</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_2">
+                <property name="text">
+                 <string>process</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <spacer name="horizontalSpacer_22">
                 <property name="orientation">
