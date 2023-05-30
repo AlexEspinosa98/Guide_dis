@@ -69,12 +69,17 @@ class mainUI(QMainWindow):
         # Botones para 
         self.b5_csv_2.clicked.connect(self.downloadcsv)
         self.b6_shape_2.clicked.connect(self.downloadshape)
+
+        self.b5_csv_3.clicked.connect(self.downloadcsv)
+        self.b6_shape_3.clicked.connect(self.downloadshape)
         #borrado de base de dato
         self.b_borrarbase.clicked.connect(self.borrartodo)
 
         #programando si es original o procesada para muestra de imagen
         self.b_original.clicked.connect(self.original)
         self.b_process.clicked.connect(self.procesada)
+        # ventana clasification
+
 
 
         #boton de seleccionar el historial
@@ -107,35 +112,34 @@ class mainUI(QMainWindow):
         
 
     def identificador(self):
-        if (self.pag):
-            self.hact=0
-            self.l_image_3.clear() 
-            self.tabla_d2_2.clearContents()
-            self.tabla2_3.clearContents()
-            self.tabla_d2_2.setRowCount(0)
-            self.timage=0
-            self.ruta_carpeta=None
-            self.detect_p=0
-            if (self.ruta_carpeta):
-                self.pag=0
-                self.imgproyectada=0 
-                self.proyect_image()
+        
+        self.hact=0
+        self.l_image_3.clear() 
+        self.tabla_d2_2.clearContents()
+        self.tabla2_3.clearContents()
+        self.tabla_d2_2.setRowCount(0)
+        self.timage=0
+        self.ruta_carpeta=None
+        self.detect_p=0
+        self.pag=1
+        self.imgproyectada=0 
+        #self.proyect_image()
                 
 
     def identificador2(self):
-        if (not(self.pag)):
-            self.hact=0
-            self.detect_p=0
-            self.l_image_2.clear()
-            self.tabla_d2.clearContents()
-            self.tabla_r.clearContents()
-            self.tabla_d2.setRowCount(0)
-            self.timage=0
-            self.ruta_carpeta=None
-            if (self.ruta_carpeta):
-                self.pag=1
-                self.imgproyectada=0
-                self.proyect_image()
+        
+        self.hact=0
+        self.detect_p=0
+        self.l_image_2.clear()
+        self.tabla_d2.clearContents()
+        self.tabla_r.clearContents()
+        self.tabla_d2.setRowCount(0)
+        self.timage=0
+        self.ruta_carpeta=None
+        self.pag=0
+        self.imgproyectada=0
+
+        #self.proyect_image()
 
     def leer_direc(self):
         self.ruta_carpeta = QFileDialog.getExistingDirectory(self,"Select Folder")
@@ -179,6 +183,7 @@ class mainUI(QMainWindow):
                         self.image.shape[0],
                         self.image.strides[0],qformat)
         img= img.rgbSwapped()
+        
         if (self.pag):
             self.l_image_3.setPixmap(QPixmap.fromImage(img))
             

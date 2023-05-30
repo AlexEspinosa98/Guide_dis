@@ -416,38 +416,6 @@ background-color: rgb(85, 205, 218);
               <number>10</number>
              </property>
              <item>
-              <widget class="QPushButton" name="b_settings">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="font">
-                <font>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="toolTip">
-                <string>settings for GUI</string>
-               </property>
-               <property name="text">
-                <string>Settings</string>
-               </property>
-               <property name="icon">
-                <iconset resource="recursos.qrc">
-                 <normaloff>:/iconos/settings.svg</normaloff>:/iconos/settings.svg</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>26</width>
-                 <height>26</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QPushButton" name="b_information">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -603,7 +571,7 @@ background-color: rgb(85, 205, 218);
           <enum>QFrame::Plain</enum>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="p_home">
           <property name="sizePolicy">

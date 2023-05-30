@@ -71,8 +71,13 @@ instance/
 ./library_new/modelo/content
 ./library_new/modelo/*
 /library_new/modelo/content
+
 ./library_new/modelo.rar
 /library_new/modelo.rar
+
+/library_new/modelo/prueba.h5
+/library_new/modelo/*
+./library_new/modelo/prueba.h5
 
 # Scrapy stuff:
 .scrapy
