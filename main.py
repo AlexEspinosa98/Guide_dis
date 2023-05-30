@@ -50,6 +50,7 @@ class mainUI(QMainWindow):
         self.pag=0
         self.timage=0
         self.hact=0
+        self.detect_p=0
         self.b_home.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_home))	 #botones para cambiar de pagina
         self.b_home.clicked.connect(self.fun_home)
         self.b_model1.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_model1))
@@ -93,8 +94,9 @@ class mainUI(QMainWindow):
         if (self.ruta_carpeta):
             self.timage=0
             self.proyect_image()
+
     def procesada(self):
-        if (self.timage ):
+        if (self.timage or self.detect_p):
             #print("hola1")
             self.timage=1
             self.proyect_image()
@@ -113,6 +115,7 @@ class mainUI(QMainWindow):
             self.tabla_d2_2.setRowCount(0)
             self.timage=0
             self.ruta_carpeta=None
+            self.detect_p=0
             if (self.ruta_carpeta):
                 self.pag=0
                 self.imgproyectada=0 
@@ -122,6 +125,7 @@ class mainUI(QMainWindow):
     def identificador2(self):
         if (not(self.pag)):
             self.hact=0
+            self.detect_p=0
             self.l_image_2.clear()
             self.tabla_d2.clearContents()
             self.tabla_r.clearContents()
@@ -208,7 +212,8 @@ class mainUI(QMainWindow):
     def procesar_detection(self):
         if (self.ruta_carpeta):    
             #necesitamos direccion para ller la variable
-        
+            # variable de detección
+            self.detect_p=1
             prediccion(self.ruta_carpeta,self.modeld,self.list_images)
             self.timage=1
             self.proyect_image()
@@ -257,6 +262,8 @@ class mainUI(QMainWindow):
         conexion.commit()
         conexion.close()
         self.historial()
+        mensaje = "Deleted"
+        QMessageBox.information(self, "information", mensaje)
 
     def llenartabla2(self):
         if (self.timage):
@@ -347,6 +354,11 @@ class mainUI(QMainWindow):
             if (resultado):
                 self.ruta_carpeta=resultado[0]
             self.hact=1
+        else:
+            self.tabla_d2_3.clearContents()
+            self.tabla_d2_3.setRowCount(0)
+            self.label_history.clear()
+
     def borrarselect(self):
         historial=self.list_combo.currentText()
         if (historial!="--------------------"):
