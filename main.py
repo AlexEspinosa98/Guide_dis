@@ -28,6 +28,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as patches
 from PIL import Image
+from tensorflow import keras
 
 import sqlite3
 
@@ -79,7 +80,7 @@ class mainUI(QMainWindow):
         self.b_original.clicked.connect(self.original)
         self.b_process.clicked.connect(self.procesada)
         # ventana clasification
-
+        self.b2_process_3.clicked.connect(self.pro_clasification)
 
 
         #boton de seleccionar el historial
@@ -91,6 +92,7 @@ class mainUI(QMainWindow):
         # modelo de deteccion
         self.modeld = torch.load(("./library_new/modelo/content"),map_location=torch.device('cpu'))
         self.modeld.eval()
+        self.modelc = keras.models.load_model("./library_new/modelo/prueba.h5")
 
     def fun_home(self):
         self.hact=0
@@ -148,7 +150,7 @@ class mainUI(QMainWindow):
     
     
     def pruebafun(self):
-        if (self.ruta_carpeta):
+        try:
             con=0
             self.list_images,con=ver_formato(self.ruta_carpeta)
             if (con>0):
@@ -160,7 +162,7 @@ class mainUI(QMainWindow):
             else:
                 mensaje = "The folder does not contain the Phantom 4 format"
                 QMessageBox.critical(self, "Error", mensaje)
-        else:
+        except:
             mensaje = "Folder not found"
             QMessageBox.critical(self, "Error", mensaje)
         
@@ -177,6 +179,7 @@ class mainUI(QMainWindow):
             
         #self.image=cv2.imread(self.ruta_carpeta+'/'+self.list_images[int(self.imgproyectada)],1)
         self.actualizartabla1()
+        self.actualizartabla2()
         self.image= cv2.resize(self.image, (520, 414), interpolation=cv2.INTER_LINEAR)
         qformat=QImage.Format.Format_BGR888
         img = QImage(self.image,self.image.shape[1],
@@ -193,29 +196,29 @@ class mainUI(QMainWindow):
             
         
     def pasarimage(self):
-        if(self.ruta_carpeta):
-            if self.imgproyectada==0:
-                self.imgproyectada=int(len(self.list_images))-1
-            else:
-                self.imgproyectada-=1
-            self.proyect_image()
-        else: 
+        try:
+                if self.imgproyectada==0:
+                    self.imgproyectada=int(len(self.list_images))-1
+                else:
+                    self.imgproyectada-=1
+                self.proyect_image()
+        except : 
             mensaje = "The folder has not been selected"
             QMessageBox.critical(self, "Error", mensaje)
 
     def pasarimage2(self):
-        if(self.ruta_carpeta):
+        try:
             if self.imgproyectada==int(len(self.list_images))-1:
                 self.imgproyectada=0
             else:
                 self.imgproyectada+=1
             self.proyect_image()
-        else:
+        except:
             mensaje = "The folder has not been selected"
             QMessageBox.critical(self, "Error", mensaje)
     
     def procesar_detection(self):
-        if (self.ruta_carpeta):    
+        try:    
             #necesitamos direccion para ller la variable
             # variable de detección
             self.detect_p=1
@@ -226,7 +229,7 @@ class mainUI(QMainWindow):
             mensaje = "complete"
             QMessageBox.information(self, "information", mensaje)
 
-        else:
+        except:
             mensaje = "the folder has not been selected"
             QMessageBox.critical(self, "Error", mensaje)
 
@@ -240,7 +243,7 @@ class mainUI(QMainWindow):
         cursor = connection.cursor()
 
         # Execute the query to fetch all the dates from the first table
-        cursor.execute("SELECT fecha FROM registro_carpeta")
+        cursor.execute("SELECT fecha,ruta_carpeta FROM registro_carpeta")
 
         # Fetch all the results
         dates = cursor.fetchall()
@@ -248,9 +251,11 @@ class mainUI(QMainWindow):
         connection.close()
         self.tabla_d2_3.clearContents()
         self.list_combo.addItem("--------------------")
+        print(dates)
         if len(dates)>0:
             for fechas in dates:
-                self.list_combo.addItem(fechas[0])
+                
+                self.list_combo.addItem(fechas[0]+"_ FOLDER:"+fechas[1].split("/")[-2]+"/"+fechas[1].split("/")[-1])
     
     
     #funcion para borrar las tablas de bdd
@@ -280,8 +285,35 @@ class mainUI(QMainWindow):
                 self.tabla_d2.setItem(indice,1,QtWidgets.QTableWidgetItem(str(imagenes["n_detection"])))
         else:
             mensaje = "the folder has not been process"
+            QMessageBox.critical(self, "Error", mensaje)
+
+    def llenartabla3(self):
+        if (self.timage):
+            dic=consulta_tablas1(self.ruta_carpeta)
+            
+            self.tabla_d2_2.setRowCount(len(dic))
+            for indice,imagenes in enumerate(dic):
+                self.tabla_d2_2.setItem(indice,0,QtWidgets.QTableWidgetItem(str(imagenes["nombre"])))
+                self.tabla_d2_2.setItem(indice,1,QtWidgets.QTableWidgetItem(str(imagenes["n_detection"])))
+        else:
+            mensaje = "the folder has not been process"
             QMessageBox.critical(self, "Error", mensaje) 
             
+    def actualizartabla2(self):
+        if (self.timage):
+            dic2=actualizar_tabla2(self.ruta_carpeta,self.list_images[int(self.imgproyectada)])
+        else:
+            dic2=[]
+        self.tabla2_3.clearContents()
+        self.tabla2_3.setRowCount(len(dic2))
+        #print(dic2)
+        for indice,imagenes in enumerate(dic2):
+            
+            self.tabla2_3.setItem(indice,0,QtWidgets.QTableWidgetItem(str(imagenes["pixel_min"])))
+            self.tabla2_3.setItem(indice,1,QtWidgets.QTableWidgetItem(str(imagenes["pixel_max"])))
+            self.tabla2_3.setItem(indice,2,QtWidgets.QTableWidgetItem(str(imagenes["lat"])))
+            self.tabla2_3.setItem(indice,3,QtWidgets.QTableWidgetItem(str(imagenes["long"])))
+
     def actualizartabla1(self):
         if (self.timage):
             dic2=actualizar_tabla2(self.ruta_carpeta,self.list_images[int(self.imgproyectada)])
@@ -319,6 +351,7 @@ class mainUI(QMainWindow):
 
     def mostrar_estadisticas(self):
         historial=self.list_combo.currentText()
+        historial=historial.split("_")[0]
         if (historial!="--------------------"):
             registro=consulta_porfecha(historial)
             self.tabla_d2_3.clearContents()
@@ -366,10 +399,27 @@ class mainUI(QMainWindow):
 
     def borrarselect(self):
         historial=self.list_combo.currentText()
+        historial=historial.split("_")[0]
         if (historial!="--------------------"):
             borrar_porfecha(historial)
             self.historial()
 
+    def pro_clasification(self):
+        print("hola")
+        if (self.ruta_carpeta):    
+            #necesitamos direccion para ller la variable
+            # variable de detección
+            self.detect_p=1
+            clasificacion(self.ruta_carpeta,self.modelc,self.list_images)
+            self.timage=1
+            self.proyect_image()
+            self.llenartabla3()
+            mensaje = "complete"
+            QMessageBox.information(self, "information", mensaje)
+
+        else:
+            mensaje = "the folder has not been selected"
+            QMessageBox.critical(self, "Error", mensaje)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

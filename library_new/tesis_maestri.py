@@ -518,3 +518,142 @@ def borrar_porfecha(fecha):
     # Commit the changes to the database
     conexion.commit()
     conexion.close()
+
+
+# para proceso de clasificacion
+def clasificacion(ruta_imagen,model,lista_imagenes):
+
+    # leemos las diferentes rutas de las imagenes en la función
+    # Es decir, la ruta de cada imagen es ruta_imagen+lista_imagenes
+
+    conn = sqlite3.connect('./library_new/test.db')
+    cursor = conn.cursor()
+
+    d = str(datetime.now())
+        # Insertar datos en la tabla
+    cursor.execute("INSERT INTO registro_carpeta (numero_de_imagenes,ruta_carpeta,fecha) VALUES (?, ?, ?)",
+                    (str(len(lista_imagenes)),ruta_imagen, d))
+
+        # Guardar los cambios y cerrar la conexión
+    conn.commit()
+    conn.close()
+
+
+    # Verifivamos la id en la que esta 
+
+    conn = sqlite3.connect('./library_new/test.db')
+    cursor = conn.cursor()
+
+    # Ejecutar la consulta SELECT *
+    cursor.execute("SELECT * FROM registro_carpeta")
+
+    # Obtener los resultados de la consulta
+    resultados = cursor.fetchall()
+    
+
+    # Recorrer los resultados e imprimir los valores
+    
+    for indice,recorrido in enumerate(resultados):
+        if (resultados[indice][3]==str(d)):
+            id_datos=int(resultados[indice][0]) #ID de FK
+    # Cerrar la conexión
+    conn.close()
+    #**********************************************# BASE DE DATOS TT
+    for individual in lista_imagenes:
+        ruta_total=ruta_imagen+"/"+individual
+        ruta_rojatif=ruta_imagen+"/"+individual[0:7]+"1.TIF"
+        # Aqui debo hacer clasificacion
+        imagen_etiquetada=cv2.imread(ruta_total,1)
+        imagen_etiquetada=cv2.cvtColor(imagen_etiquetada,cv2.COLOR_BGR2RGB)
+        tam_x,tam_y,tamz=imagen_etiquetada.shape
+        # División de total de pixeles/ número de divisiones
+        # Se obtiene el tamaño de cada sección
+        div_x=round(tam_x/10)
+        div_y=round(tam_y/10)
+        copia=imagen_etiquetada.copy()
+        output=[]
+        boxes=[]
+        scores=[]
+        for j in range(10):
+            for i in range (10):
+                if (div_x*(i+1)<=tam_x):
+                    cuadro=copia[div_x*i:div_x*(i+1),j*div_y:div_y*(j+1)]
+                    cuadro=cuadro/255
+                    matriz_cuatro_dimensiones = np.expand_dims(cuadro, axis=0)
+                    result=model.predict(matriz_cuatro_dimensiones)
+                    max_value = np.max(result)
+                    max_index = np.argmax(result)
+                    if (max_index==1):
+                        boxes.append([div_x*i,j*div_y,div_x*(i+1),div_y*(j+1)])
+                        scores.append(max_value)
+        output=[{"boxes":boxes, "scores": scores}]
+        #llenamos base de datos
+        conn = sqlite3.connect('./library_new/test.db')
+        cursor = conn.cursor()
+
+        d = str(datetime.now())
+            # Insertar datos en la tabla
+        cursor.execute("INSERT INTO tabla_imagenes (nombre_imagen,cantidad_detect,id_registro_carpeta) VALUES (?, ?, ?)",
+                        (str(individual),int(len(output[0]['scores'])),int(id_datos)))
+
+            # Guardar los cambios y cerrar la conexión
+        conn.commit()
+        conn.close()
+
+#__ Id de segunda tabla (filtramos por ir de carpeta y nombre)
+
+        conexion = sqlite3.connect('./library_new/test.db')
+        cursor = conexion.cursor()
+
+
+        # Consultar el id de la fila con nombre_imagen y id_registro_carpeta especificados
+        cursor.execute("SELECT id FROM tabla_imagenes WHERE nombre_imagen = ? AND id_registro_carpeta = ?", (str(individual), int(id_datos)))
+        resultado = cursor.fetchone()
+
+        if resultado is not None:
+            id_fila = resultado[0] #id_fila tiene la id de guardado
+        # Cerrar la conexión
+        conexion.close()
+
+        
+        # Finalizacion llenado tabla 2 base de datos
+        
+        for detection in output:
+            boxes = detection['boxes']
+            
+            scores = detection['scores']
+            
+            
+            # Recorre cada detección y dibuja el cuadro delimitador
+            for box, score in zip(boxes,  scores):
+                x, y, x2, y2 = box
+                
+                cx=int(x+((x2-x)//2))
+                cy=int(y+((y2-y)//2))
+                lat,longi =convertgps(cx,cy,ruta_rojatif)
+                #llenado de tabla 3
+                conn = sqlite3.connect('./library_new/test.db')
+                cursor = conn.cursor()
+
+                d = str(datetime.now())
+                    # Insertar datos en la tabla
+                cursor.execute("INSERT INTO resultado_imagen (pixel_min,pixel_max,latitud,longitud,score,id_tabla_imagenes) VALUES (?, ?, ?, ?, ?, ?)",
+                                (str([int(x),int(y)]),str([int(x2),int(y2)]),str(longi),str(lat),str(score.item()),id_fila))
+
+                    # Guardar los cambios y cerrar la conexión
+                conn.commit()
+                conn.close()
+                # FIN DE LLENADO DE TABLA 3
+                #Nota: Tal vez lo de abajo ya no este
+
+                
+                # Crea un objeto Rectangle para el cuadro delimitador
+                """ rect = patches.Rectangle((x, y), w, h, linewidth=2, edgecolor='r', facecolor='none')
+                
+                # Añade el cuadro delimitador a la imagen
+                ax.add_patch(rect)
+                
+                # Añade una etiqueta con la clase y la puntuación
+                label_str = f'Clase: {label.item()}, score: {score.item():.2f}'
+                ax.text(x, y, label_str, fontsize=8, color='r', verticalalignment='top') """
+        
