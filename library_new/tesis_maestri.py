@@ -107,8 +107,10 @@ def prediccion(ruta_imagen,model,lista_imagenes):
         input_image = transform(image).unsqueeze(0)  # Añade una dimensión adicional para el lote (batch)
         with torch.no_grad():  # Desactiva el cálculo de gradientes
             o """
-        output = model(image)
+        print("aqui estoy")
+        output = model.predict(image,)
 
+        print("por aca pase- estoy")
         
         #llenamos base de datos
         conn = sqlite3.connect('./library_new/test.db')
@@ -117,7 +119,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
         d = str(datetime.now())
             # Insertar datos en la tabla
         cursor.execute("INSERT INTO tabla_imagenes (nombre_imagen,cantidad_detect,id_registro_carpeta) VALUES (?, ?, ?)",
-                        (str(individual),int(len(output[0]['labels'])),int(id_datos)))
+                        (str(individual),int(len(output[0])),int(id_datos)))
 
             # Guardar los cambios y cerrar la conexión
         conn.commit()
@@ -143,11 +145,13 @@ def prediccion(ruta_imagen,model,lista_imagenes):
         imagen_etiquetada=cv2.imread(ruta_total,1)
         imagen_etiquetada=cv2.cvtColor(imagen_etiquetada,cv2.COLOR_BGR2RGB)
         for detection in output:
-            boxes = detection['boxes']
-            labels = detection['labels']
-            scores = detection['scores']
+            boxes = detection.boxes.xywhn
+            labels = detection.boxes.cls
+            scores = detection.boxes.conf
             
-            
+            print("boxes",boxes)
+            print("boxes",labels)
+            print("boxes",score)
             # Recorre cada detección y dibuja el cuadro delimitador
             for box, label, score in zip(boxes, labels, scores):
                 x, y, x2, y2 = box.tolist()
