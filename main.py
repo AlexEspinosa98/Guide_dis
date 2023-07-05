@@ -12,7 +12,7 @@ from PyQt6.uic import loadUi
 import recursos_iconos
 import cv2
 
-from output import *
+
 from library_new.tesis_maestri import *
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog
@@ -31,7 +31,7 @@ from PIL import Image
 from tensorflow import keras
 
 import sqlite3
-
+from ultralytics import YOLO
 """/// Listado de variable  utilizadas y funciones\\
     self.ruta_variable => Variable que guarda la dir de folder
     self.list_image    => Variable que contiene la lista de imagenes
@@ -90,9 +90,11 @@ class mainUI(QMainWindow):
         self.b_delete_selec.clicked.connect(self.borrarselect)
         self.b2_process_2.clicked.connect(self.procesar_detection)
         # modelo de deteccion
-        self.modeld = torch.load(("./library_new/modelo/content"),map_location=torch.device('cpu'))
-        self.modeld.eval()
+    
         self.modelc = keras.models.load_model("./library_new/modelo/prueba.h5")
+
+        
+        self.modeld= YOLO(".library_new/modelo/best.pt")
 
     def fun_home(self):
         self.hact=0

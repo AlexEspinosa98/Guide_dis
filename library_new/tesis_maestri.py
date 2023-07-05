@@ -99,14 +99,15 @@ def prediccion(ruta_imagen,model,lista_imagenes):
         ruta_rojatif=ruta_imagen+"/"+individual[0:7]+"1.TIF"
         #print(ruta_total)
         image = Image.open(ruta_total)
-        transform = transforms.Compose([
+        """ transform = transforms.Compose([
             transforms.Resize((1300, 1600)),
             transforms.ToTensor(),
             #transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalización típica de ImageNet
         ])
         input_image = transform(image).unsqueeze(0)  # Añade una dimensión adicional para el lote (batch)
         with torch.no_grad():  # Desactiva el cálculo de gradientes
-            output = model(input_image)
+            o """
+        output = model(image)
 
         
         #llenamos base de datos

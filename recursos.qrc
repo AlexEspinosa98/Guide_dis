@@ -3,6 +3,8 @@
     <file>iconos/activity.svg</file>
     <file>iconos/airplay.svg</file>
     <file>iconos/alert-circle.svg</file>
+    <file>iconos/gideam-removebg-preview.png</file>
+    <file>iconos/escudo_u.png</file>
     <file>iconos/alert-octagon.svg</file>
     <file>iconos/alert-triangle.svg</file>
     <file>iconos/align-center.svg</file>
@@ -289,4 +291,5 @@
     <file>iconos/zoom-in.svg</file>
     <file>iconos/zoom-out.svg</file>
   </qresource>
+  <qresource/>
 </RCC>
