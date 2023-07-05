@@ -94,7 +94,7 @@ class mainUI(QMainWindow):
         self.modelc = keras.models.load_model("./library_new/modelo/prueba.h5")
 
         
-        self.modeld= YOLO(".library_new/modelo/best.pt")
+        self.modeld= YOLO("./library_new/modelo/best.pt")
 
     def fun_home(self):
         self.hact=0

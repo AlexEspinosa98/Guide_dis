@@ -108,8 +108,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
         with torch.no_grad():  # Desactiva el cálculo de gradientes
             o """
         print("aqui estoy")
-        output = model.predict(image,)
-
+        output = model(image)
         print("por aca pase- estoy")
         
         #llenamos base de datos
@@ -145,7 +144,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
         imagen_etiquetada=cv2.imread(ruta_total,1)
         imagen_etiquetada=cv2.cvtColor(imagen_etiquetada,cv2.COLOR_BGR2RGB)
         for detection in output:
-            boxes = detection.boxes.xywhn
+            boxes = detection.boxes.xyxy
             labels = detection.boxes.cls
             scores = detection.boxes.conf
             
@@ -162,7 +161,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
                 #llenado de tabla 3
                 conn = sqlite3.connect('./library_new/test.db')
                 cursor = conn.cursor()
-
+                print("por aqui voy")
                 d = str(datetime.now())
                     # Insertar datos en la tabla
                 cursor.execute("INSERT INTO resultado_imagen (pixel_min,pixel_max,latitud,longitud,score,id_tabla_imagenes) VALUES (?, ?, ?, ?, ?, ?)",
@@ -171,6 +170,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
                     # Guardar los cambios y cerrar la conexión
                 conn.commit()
                 conn.close()
+                print("por aqui sali")
                 # FIN DE LLENADO DE TABLA 3
                 #Nota: Tal vez lo de abajo ya no este
 
