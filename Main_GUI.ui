@@ -544,7 +544,7 @@ background-color: rgb(85, 205, 218);
        <enum>QFrame::Plain</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="p_home">
        <property name="sizePolicy">
@@ -594,6 +594,11 @@ background-color: rgb(85, 205, 218);
                <height>200</height>
               </size>
              </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel{
+	background-color:rgba(0, 0, 0,0)
+}</string>
+             </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
@@ -641,6 +646,14 @@ background-color: rgb(85, 205, 218);
              <property name="autoFillBackground">
               <bool>false</bool>
              </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel{
+	background-color:rgba(181, 239, 255,0.2)
+	
+}
+
+</string>
+             </property>
              <property name="text">
               <string> SIGACHECK</string>
              </property>
@@ -669,6 +682,11 @@ background-color: rgb(85, 205, 218);
                <height>200</height>
               </size>
              </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel{
+	background-color:rgba(0, 0, 0,0)
+}</string>
+             </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
@@ -687,6 +705,18 @@ background-color: rgb(85, 205, 218);
          </item>
          <item>
           <widget class="QTextBrowser" name="textBrowser_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>900</width>
+             <height>160</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>Times New Roman</family>
@@ -698,8 +728,8 @@ background-color: rgb(85, 205, 218);
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Times New Roman'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2';&quot;&gt;Abstrac:&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2';&quot;&gt;Sigachek is an application developed by the GIDEAM research group at the University of Magdalena. It is based on machine learning algorithms for the detection of Black Sigatoka using images from the Phantom 4 Multispectral drone in banana crops. Two approaches were implemented for crop evaluation.The first approach uses a sliding window classification methodology based on MobileNetV2, and the second approach implements a detection model using the Yolov8 architecture.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600;&quot;&gt;Abstrac:&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;Sigachek is an application developed by the GIDEAM research group at the University of Magdalena. It is based on machine learning algorithms for the detection of Black Sigatoka using images from the Phantom 4 Multispectral drone in banana crops. Two approaches were implemented for crop evaluation.The first approach uses a sliding window classification methodology based on MobileNetV2, and the second approach implements a detection model using the Yolov8 architecture.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -716,8 +746,8 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Times New Roman'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt;&quot;&gt;Resumen:&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt;&quot;&gt;Sigachek es una aplicación desarollada en el grupo de investigación GIDEAM de la Universidad Del Magdalena,la cual se basa en algoritmos de aprendizaje de máquina para la detección de Sigatoka negra mediante imágenes del dron Phantom 4 multiespectral en cultivos productivos de banano. Se implementaron 2 enfoques para la evaluación del cultivo, el primero utiliza una metodología clasificación medientaventanas deslizantes basada en MobilenetV2 y, el segundo implementa un modelo de detección con la arquitectura Yolov8.  &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600;&quot;&gt;Resumen:&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;Sigachek es una aplicación desarollada en el grupo de investigación GIDEAM de la Universidad Del Magdalena,la cual se basa en algoritmos de aprendizaje de máquina para la detección de Sigatoka negra mediante imágenes del dron Phantom 4 multiespectral en cultivos productivos de banano. Se implementaron 2 enfoques para la evaluación del cultivo, el primero utiliza una metodología clasificación medientaventanas deslizantes basada en MobilenetV2 y, el segundo implementa un modelo de detección con la arquitectura Yolov8.  &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -849,6 +879,12 @@ background-color: rgb(84, 205, 218);</string>
           <layout class="QHBoxLayout" name="ho_titulo2_3">
            <item>
             <widget class="QPushButton" name="pushButton">
+             <property name="maximumSize">
+              <size>
+               <width>62</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
               <string>Original</string>
              </property>
@@ -856,8 +892,56 @@ background-color: rgb(84, 205, 218);</string>
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_2">
+             <property name="maximumSize">
+              <size>
+               <width>62</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
               <string>Process</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Maximum</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>260</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>300</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel{
+	background-color:rgba(0, 0, 0,0);
+	text-align: center;
+}
+</string>
+             </property>
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>
@@ -866,9 +950,12 @@ background-color: rgb(84, 205, 218);</string>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Maximum</enum>
+             </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>40</width>
+               <width>115</width>
                <height>20</height>
               </size>
              </property>
@@ -902,7 +989,7 @@ border: 2px solid  rgb(50, 121, 129);
               <enum>Qt::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Preferred</enum>
+              <enum>QSizePolicy::Maximum</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -1704,6 +1791,12 @@ background-color: rgb(84, 205, 218);</string>
           <layout class="QHBoxLayout" name="ho_titulo2_2">
            <item>
             <widget class="QPushButton" name="b_original">
+             <property name="maximumSize">
+              <size>
+               <width>62</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="font">
               <font>
                <weight>75</weight>
@@ -1717,6 +1810,12 @@ background-color: rgb(84, 205, 218);</string>
            </item>
            <item>
             <widget class="QPushButton" name="b_process">
+             <property name="maximumSize">
+              <size>
+               <width>62</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="font">
               <font>
                <weight>75</weight>
@@ -1729,13 +1828,57 @@ background-color: rgb(84, 205, 218);</string>
             </widget>
            </item>
            <item>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Maximum</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>260</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_8">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>300</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel{
+	background-color:rgba(0, 0, 0,0);
+	text-align: center;
+}</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="horizontalSpacer_12">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Maximum</enum>
+             </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>40</width>
+               <width>115</width>
                <height>20</height>
               </size>
              </property>
@@ -1769,7 +1912,7 @@ border: 2px solid  rgb(50, 121, 129);
               <enum>Qt::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Preferred</enum>
+              <enum>QSizePolicy::Maximum</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>

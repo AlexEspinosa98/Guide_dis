@@ -128,7 +128,7 @@ class mainUI(QMainWindow):
         self.pag=1
         self.imgproyectada=0 
         #self.proyect_image()
-                
+        self.label_7.clear()    
 
     def identificador2(self):
         
@@ -142,7 +142,7 @@ class mainUI(QMainWindow):
         self.ruta_carpeta=None
         self.pag=0
         self.imgproyectada=0
-
+        self.label_8.clear() 
         #self.proyect_image()
 
     def leer_direc(self):
@@ -191,9 +191,12 @@ class mainUI(QMainWindow):
         
         if (self.pag):
             self.l_image_3.setPixmap(QPixmap.fromImage(img))
-            
+            #aqui agrego label clsificactyion
+            self.label_7.setText(self.list_images[int(self.imgproyectada)])
         else:
             self.l_image_2.setPixmap(QPixmap.fromImage(img))
+            self.label_8.setText(self.list_images[int(self.imgproyectada)])
+            #aqui agrego label2 detection
             
             
         
