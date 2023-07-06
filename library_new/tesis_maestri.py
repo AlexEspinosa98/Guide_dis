@@ -150,7 +150,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
             
             print("boxes",boxes)
             print("boxes",labels)
-            print("boxes",score)
+            print("boxes",scores)
             # Recorre cada detección y dibuja el cuadro delimitador
             for box, label, score in zip(boxes, labels, scores):
                 x, y, x2, y2 = box.tolist()
