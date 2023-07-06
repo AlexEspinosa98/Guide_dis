@@ -227,14 +227,11 @@ class mainUI(QMainWindow):
             prediccion(self.ruta_carpeta,self.modeld,self.list_images)
             self.timage=1
             self.proyect_image()
-            print("Pase proyectar_imagen")
             self.llenartabla2()
-            print("Pase llenartabla")
             mensaje = "complete"
             QMessageBox.information(self, "information", mensaje)
 
         except:
-            print("Error en algun momento")
             mensaje = "the folder has not been selected"
             QMessageBox.critical(self, "Error", mensaje)
 

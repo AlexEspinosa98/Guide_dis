@@ -147,10 +147,6 @@ def prediccion(ruta_imagen,model,lista_imagenes):
             boxes = detection.boxes.xyxy
             labels = detection.boxes.cls
             scores = detection.boxes.conf
-            
-            print("boxes",boxes)
-            print("boxes",labels)
-            print("boxes",scores)
             # Recorre cada detección y dibuja el cuadro delimitador
             for box, label, score in zip(boxes, labels, scores):
                 x, y, x2, y2 = box.tolist()
@@ -161,7 +157,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
                 #llenado de tabla 3
                 conn = sqlite3.connect('./library_new/test.db')
                 cursor = conn.cursor()
-                print("por aqui voy")
+                
                 d = str(datetime.now())
                     # Insertar datos en la tabla
                 cursor.execute("INSERT INTO resultado_imagen (pixel_min,pixel_max,latitud,longitud,score,id_tabla_imagenes) VALUES (?, ?, ?, ?, ?, ?)",
@@ -170,7 +166,6 @@ def prediccion(ruta_imagen,model,lista_imagenes):
                     # Guardar los cambios y cerrar la conexión
                 conn.commit()
                 conn.close()
-                print("por aqui sali")
                 # FIN DE LLENADO DE TABLA 3
                 #Nota: Tal vez lo de abajo ya no este
 
