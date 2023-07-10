@@ -571,7 +571,7 @@ background-color: rgb(85, 205, 218);
           <enum>QFrame::Plain</enum>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="p_home">
           <property name="sizePolicy">
