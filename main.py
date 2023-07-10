@@ -30,8 +30,19 @@ import matplotlib.patches as patches
 from PIL import Image
 from tensorflow import keras
 
+from datetime import datetime
+import re
+import rasterio
+import rasterio.features
+import rasterio.warp
+from rasterio.transform import Affine
+import rasterio.sample
+import rasterio.vrt
+
+
 import sqlite3
 from ultralytics import YOLO
+
 """/// Listado de variable  utilizadas y funciones\\
     self.ruta_variable => Variable que guarda la dir de folder
     self.list_image    => Variable que contiene la lista de imagenes
@@ -39,7 +50,7 @@ from ultralytics import YOLO
     self.pag = dice en que pagina esta y reinicia
     timage= saber si es la imagen original o la procesada
     """
-import subprocess
+
 
 
 class mainUI(QMainWindow):
