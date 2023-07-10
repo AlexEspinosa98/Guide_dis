@@ -36,9 +36,9 @@ import rasterio
 import rasterio.features
 import rasterio.warp
 from rasterio.transform import Affine
-import rasterio.sample
-import rasterio.vrt
-
+#import rasterio.sample
+#import rasterio.vrt
+np.set_printoptions(precision=8)
 
 import sqlite3
 from ultralytics import YOLO
@@ -82,6 +82,7 @@ class mainUI(QMainWindow):
         
         self.b_help.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_help))
         #boton para pdf
+        self.b_information.clicked.connect(self.open_pdf)
         
         # Botones para 
         self.b5_csv_2.clicked.connect(self.downloadcsv)

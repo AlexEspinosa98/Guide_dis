@@ -28,7 +28,7 @@ import numpy as np
 import cv2
 import csv  # libreria para convertir a csv
 import shapefile # libreria para shape
-
+np.set_printoptions(precision=8)
 """/// Listado de funciones\\\
     self.ruta_variable => Variable que guarda la dir de folder
     self.ver_formato
@@ -95,6 +95,7 @@ def prediccion(ruta_imagen,model,lista_imagenes):
     conn.close()
     #**********************************************# BASE DE DATOS TT
     for individual in lista_imagenes:
+        np.set_printoptions(precision=8)
         ruta_total=ruta_imagen+"/"+individual
         ruta_rojatif=ruta_imagen+"/"+individual[0:7]+"1.TIF"
         #print(ruta_total)
@@ -153,8 +154,12 @@ def prediccion(ruta_imagen,model,lista_imagenes):
                 
                 cx=int(x+((x2-x)//2))
                 cy=int(y+((y2-y)//2))
+                print("cx",cx)
+                print("cy",cy)
                 lat,longi =convertgps(cx,cy,ruta_rojatif)
                 #llenado de tabla 3
+                print("lat ", lat)
+                print("log ", longi)
                 conn = sqlite3.connect('./library_new/test.db')
                 cursor = conn.cursor()
                 
@@ -261,7 +266,7 @@ def TransfromRaster(img_path):
     return transform
 
 def convertgps(x,y,path_red):
-
+    
     trans = TransfromRaster(path_red)
     transfor = np.array([[trans.a, trans.b, trans.c], 
                      [trans.d, trans.e, trans.f],
@@ -525,7 +530,7 @@ def clasificacion(ruta_imagen,model,lista_imagenes):
 
     # leemos las diferentes rutas de las imagenes en la función
     # Es decir, la ruta de cada imagen es ruta_imagen+lista_imagenes
-
+    np.set_printoptions(precision=8)
     conn = sqlite3.connect('./library_new/test.db')
     cursor = conn.cursor()
 
