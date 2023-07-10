@@ -561,16 +561,35 @@ def clasificacion(ruta_imagen,model,lista_imagenes):
     #**********************************************# BASE DE DATOS TT
     for individual in lista_imagenes:
         ruta_total=ruta_imagen+"/"+individual
-        ruta_rojatif=ruta_imagen+"/"+individual[0:7]+"1.TIF"
+        ruta_rojatif=ruta_imagen+"/"+individual[0:7]+"3.TIF"
+        ruta_regtif=ruta_imagen+"/"+individual[0:7]+"4.TIF"
+        ruta_niratif=ruta_imagen+"/"+individual[0:7]+"5.TIF"
+        
+        img_RGB=cv2.imread(ruta_total,1)
+        img_RED=cv2.imread(ruta_rojatif,0)
+        img_REG=cv2.imread(ruta_regtif,0)
+        img_NIR=cv2.imread(ruta_niratif,0)
+        width,height,_=img_RGB.shape
+        b_RGB = cv2.resize(img_RGB, (width, height), interpolation=cv2.INTER_LINEAR)
+        base_NIR = cv2.resize(img_NIR, (width, height), interpolation=cv2.INTER_LINEAR)
+        b_RED = cv2.resize(img_RED, (width, height), interpolation=cv2.INTER_LINEAR)
+        b_REG = cv2.resize(img_REG, (width, height), interpolation=cv2.INTER_LINEAR)
+
+        
+        stb_RED = estabilizador_imagen(b_RED, b_RGB)
+        stb_REG = estabilizador_imagen(b_REG, b_RGB)
+        stb_NIR = estabilizador_imagen(base_NIR, b_RGB)
+        
+        nueva=cv2.merge([stb_RED,stb_REG,stb_NIR])
+        
         # Aqui debo hacer clasificacion
-        imagen_etiquetada=cv2.imread(ruta_total,1)
-        imagen_etiquetada=cv2.cvtColor(imagen_etiquetada,cv2.COLOR_BGR2RGB)
-        tam_x,tam_y,tamz=imagen_etiquetada.shape
+        
+        tam_x,tam_y,tamz=nueva.shape
         # División de total de pixeles/ número de divisiones
         # Se obtiene el tamaño de cada sección
         div_x=round(tam_x/10)
         div_y=round(tam_y/10)
-        copia=imagen_etiquetada.copy()
+        copia=nueva.copy()
         output=[]
         boxes=[]
         scores=[]
@@ -578,12 +597,13 @@ def clasificacion(ruta_imagen,model,lista_imagenes):
             for i in range (10):
                 if (div_x*(i+1)<=tam_x):
                     cuadro=copia[div_x*i:div_x*(i+1),j*div_y:div_y*(j+1)]
-                    cuadro=cuadro/255
+                    cuadro=cv2.resize(cuadro,(224,224),interpolation = cv2.INTER_AREA)
+                    #cuadro=cuadro/255
                     matriz_cuatro_dimensiones = np.expand_dims(cuadro, axis=0)
                     result=model.predict(matriz_cuatro_dimensiones)
                     max_value = np.max(result)
                     max_index = np.argmax(result)
-                    if (max_index==1):
+                    if (max_index==0):
                         boxes.append([div_x*i,j*div_y,div_x*(i+1),div_y*(j+1)])
                         scores.append(max_value)
         output=[{"boxes":boxes, "scores": scores}]
@@ -656,4 +676,62 @@ def clasificacion(ruta_imagen,model,lista_imagenes):
                 # Añade una etiqueta con la clase y la puntuación
                 label_str = f'Clase: {label.item()}, score: {score.item():.2f}'
                 ax.text(x, y, label_str, fontsize=8, color='r', verticalalignment='top') """
+                
+def estabilizador_imagen(imagen_base, imagen_a_estabilizar, radio = 0.75, error_reproyeccion = 4.0, coincidencias = False):
+        """Esta clase devuelve una secuencia de imágenes tomadas de la cámara estabilizada con respecto a la primera imagen"""
         
+        # Se obtienen los puntos deinterés
+        
+        (kpsBase, featuresBase) = obtener_puntos_interes(imagen_base)
+        (kpsAdicional, featuresAdicional) = obtener_puntos_interes(imagen_a_estabilizar)
+        # Se buscan las coincidencias        
+        
+        M = encontrar_coincidencias(imagen_base, imagen_a_estabilizar, kpsBase, kpsAdicional, featuresBase, featuresAdicional, radio)
+        
+        if M is None:
+            print("pocas coincidencias")
+            return None
+        
+        if len(M) > 4:
+            # construct the two sets of points
+            # M2 = cv2.getPerspectiveTransform(ptsA,ptsB)
+            (H, status) = encontrar_H_RANSAC_Estable(M, kpsBase, kpsAdicional, error_reproyeccion)
+            estabilizada = cv2.warpPerspective(imagen_base,H,(imagen_base.shape[1],imagen_base.shape[0]))
+            return estabilizada
+        print("sin coincidencias")
+        return None
+    #--------------------------------------------------------------------------
+def obtener_puntos_interes(imagen):
+    f =cv2.SIFT_create()
+    (kps, features) =f.detectAndCompute(imagen, None)
+    return kps, features
+
+def encontrar_coincidencias(img1, img2, kpsA, kpsB, featuresA, featuresB, ratio):
+        """Metodo para estimar la homografia"""
+        
+        matcher = cv2.DescriptorMatcher_create("BruteForce")
+        rawMatches = matcher.knnMatch(featuresA, featuresB, 2)
+        matches = []
+#        
+#        # loop over the raw matches
+        for m in rawMatches:
+#            # ensure the distance is within a certain ratio of each
+#            # other (i.e. Lowe's ratio test)
+            if len(m) == 2 and m[0].distance < m[1].distance * ratio:
+                matches.append((m[0].trainIdx, m[0].queryIdx))
+        
+#        print (matches)
+        return matches
+    
+def encontrar_H_RANSAC_Estable( matches, kpsA, kpsB, reprojThresh):
+        """Metodo para aplicar una H a una imagen y obtener la proyectividad"""
+        
+        if len(matches) > 4:
+            # construct the two sets of points
+            ptsA = np.float32([kpsA[i].pt for (_, i) in matches])
+            ptsB = np.float32([kpsB[i].pt for (i, _) in matches])
+    
+            # compute the homography between the two sets of points
+            (H, status) = cv2.findHomography(ptsA, ptsB, cv2.RANSAC, reprojThresh)
+            
+            return (H, status)

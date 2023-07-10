@@ -39,6 +39,7 @@ from ultralytics import YOLO
     self.pag = dice en que pagina esta y reinicia
     timage= saber si es la imagen original o la procesada
     """
+import subprocess
 
 
 class mainUI(QMainWindow):
@@ -66,7 +67,11 @@ class mainUI(QMainWindow):
         self.b4_right_3.clicked.connect(self.pasarimage2)
         self.b3_left_2.clicked.connect(self.pasarimage)   #boton izquierda para pasar datos
         self.b4_right_2.clicked.connect(self.pasarimage2)
-    
+        self.b_model2.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_model2))
+        
+        self.b_help.clicked.connect(lambda: self.pages.setCurrentWidget(self.p_help))
+        #boton para pdf
+        
         # Botones para 
         self.b5_csv_2.clicked.connect(self.downloadcsv)
         self.b6_shape_2.clicked.connect(self.downloadshape)
@@ -91,11 +96,14 @@ class mainUI(QMainWindow):
         self.b2_process_2.clicked.connect(self.procesar_detection)
         # modelo de deteccion
     
-        self.modelc = keras.models.load_model("./library_new/modelo/prueba.h5")
+        self.modelc = keras.models.load_model("./library_new/modelo/model_class.h5")
 
         
         self.modeld= YOLO("./library_new/modelo/best.pt")
 
+    def open_pdf(self):
+        os.startfile("Manual_de_usuario.pdf")
+    
     def fun_home(self):
         self.hact=0
     
@@ -410,7 +418,7 @@ class mainUI(QMainWindow):
             self.historial()
 
     def pro_clasification(self):
-        print("hola")
+    
         if (self.ruta_carpeta):    
             #necesitamos direccion para ller la variable
             # variable de detección
