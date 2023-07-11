@@ -108,9 +108,9 @@ def prediccion(ruta_imagen,model,lista_imagenes):
         input_image = transform(image).unsqueeze(0)  # Añade una dimensión adicional para el lote (batch)
         with torch.no_grad():  # Desactiva el cálculo de gradientes
             o """
-        print("aqui estoy")
+ 
         output = model(image)
-        print("por aca pase- estoy")
+
         
         #llenamos base de datos
         conn = sqlite3.connect('./library_new/test.db')
@@ -154,12 +154,9 @@ def prediccion(ruta_imagen,model,lista_imagenes):
                 
                 cx=int(x+((x2-x)//2))
                 cy=int(y+((y2-y)//2))
-                print("cx",cx)
-                print("cy",cy)
+
                 lat,longi =convertgps(cx,cy,ruta_rojatif)
-                #llenado de tabla 3
-                print("lat ", lat)
-                print("log ", longi)
+
                 conn = sqlite3.connect('./library_new/test.db')
                 cursor = conn.cursor()
                 
@@ -694,7 +691,7 @@ def estabilizador_imagen(imagen_base, imagen_a_estabilizar, radio = 0.75, error_
         M = encontrar_coincidencias(imagen_base, imagen_a_estabilizar, kpsBase, kpsAdicional, featuresBase, featuresAdicional, radio)
         
         if M is None:
-            print("pocas coincidencias")
+
             return None
         
         if len(M) > 4:
@@ -703,7 +700,7 @@ def estabilizador_imagen(imagen_base, imagen_a_estabilizar, radio = 0.75, error_
             (H, status) = encontrar_H_RANSAC_Estable(M, kpsBase, kpsAdicional, error_reproyeccion)
             estabilizada = cv2.warpPerspective(imagen_base,H,(imagen_base.shape[1],imagen_base.shape[0]))
             return estabilizada
-        print("sin coincidencias")
+
         return None
     #--------------------------------------------------------------------------
 def obtener_puntos_interes(imagen):

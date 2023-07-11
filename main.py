@@ -276,7 +276,7 @@ class mainUI(QMainWindow):
         connection.close()
         self.tabla_d2_3.clearContents()
         self.list_combo.addItem("--------------------")
-        print(dates)
+
         if len(dates)>0:
             for fechas in dates:
                 
